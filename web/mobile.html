@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Mobile Gyro Reader</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <style>
+        #no {
+        display: none;
+        }
+
+        @media screen {
+        html, body, div, span {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        outline: 0;
+        font-size: 100%;
+        vertical-align: baseline;
+        }
+        body {
+        height: auto;
+        -webkit-text-size-adjust:none;
+        font-family:Helvetica, Arial, Verdana, sans-serif;
+        padding:0px;
+        overflow-x: hidden;
+        }
+
+        .outer {
+        background: rgba(123, 256, 245, 0.9);
+        padding: 0px;
+        min-height: 48px;
+
+        }
+
+        .box {
+        position: relative;
+        float: left;
+        width: 100%;
+        padding: 7px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        background: rgba(178,215,255,0.75);
+        min-height: 160px;
+        }
+
+        .box span {
+        display: block;
+        }
+
+        span.head {
+        font-weight: bold;
+        }
+
+        }
+    </style>
+</head>
+
+<body>
+<div id="yes">
+
+
+    <form name="idForm" action="#" method="get">
+        <input type="text" name="idField" value=""> <br>
+        <input type="button" value="Set Id" onclick="updateId(this.form)"> <br>
+        <input type="button" value="Calibrate" onclick="calibrate()">
+    </form>
+
+    <div class="box" id="gyro">
+        <h2>Device Orientation</h2>
+	<table>
+	  <tr>
+	    <td>Event Supported</td>
+	    <td id="doEvent"></td>
+	  </tr>
+	  <tr>
+	    <td>Tilt Left/Right [tiltLR]</td>
+	    <td id="doTiltLR"></td>
+	  </tr>
+	  <tr>
+	    <td>Tilt Front/Back [tiltFB]</td>
+	    <td id="doTiltFB"></td>
+	  </tr>
+	</table>
+    </div>
+
+</div>
+
+<div id="no">
+    Your browser does not support Device Orientation and Motion API. Try this sample with iPhone, iPod or iPad with iOS
+    4.2+. And some android devices.
+</div>
+
+<script>
+
+    var sampleFrequency = 100;
+    var tiltLR = 0;
+    var tiltFB = 0;
+    var offsetTiltFB = 0;
+    var offsetTiltLR = 0;
+    var time = 0;
+    var id = -1;
+
+    var socket = io.connect(document.location.host);
+    
+    if (window.DeviceOrientationEvent) {
+    
+      document.getElementById("doEvent").innerHTML = "DeviceOrientation";
+      // Listen for the deviceorientation event and handle the raw data
+      window.addEventListener('deviceorientation', deviceOrientationListener, false);
+      
+    } else if (window.OrientationEvent) {
+    
+      document.getElementById("doEvent").innerHTML = "MozOrientation";
+      window.addEventListener('MozOrientation', mozOrientationListener, false);
+      
+    } else {
+      document.getElementById("doEvent").innerHTML = "Not supported on your device or browser."
+    }
+ 
+    function deviceOrientationListener(eventData) {
+    
+	//if device doesn't support orientation, this listener is called only once with null event
+	//check http://www.html5rocks.com/en/tutorials/device/orientation/ for more details
+    
+	if (eventData.gamma == null && eventData.beta == null)
+	{
+	  //deviceOrientation is not managed, deviceorientation listener is called only one time
+	  if (window.DeviceMotionEvent)
+	  {
+	    document.getElementById("doEvent").innerHTML = "DeviceMotion";
+	    window.addEventListener('devicemotion', deviceMotionListener, false);
+	  } else {
+	    document.getElementById("doEvent").innerHTML = "Not supported on your device or browser."
+	  }
+
+	}else
+	{
+  	  // gamma is the left-to-right tilt in degrees, where right is positive
+	  tiltLR = Math.round(eventData.gamma);
+
+	  // beta is the front-to-back tilt in degrees, where front is positive
+	  tiltFB = Math.round(eventData.beta);
+
+	}
+    }
+    
+    function mozOrientationListener(eventData) {
+	// x is the left-to-right tilt from -1 to +1, so we need to convert to degrees
+	tiltLR = Math.round(eventData.x * 90);
+
+	// y is the front-to-back tilt from -1 to +1, so we need to convert to degrees
+	// We also need to invert the value so tilting the device towards us (forward) 
+	// results in a positive value. 
+	tiltFB = Math.round(eventData.y * -90);
+	
+    }
+    
+    
+    function deviceMotionListener(eventData) {
+      // Grab the acceleration including gravity from the results
+      var acceleration = eventData.accelerationIncludingGravity;
+
+      // Z is the acceleration in the Z axis, and if the device is facing up or down
+      var facingUp = -1;
+      if (acceleration.z > 0) {
+	facingUp = +1;
+      }
+      
+      // Convert the value from acceleration to degrees acceleration.x|y is the 
+      // acceleration according to gravity, we'll assume we're on Earth and divide 
+      // by 9.81 (earth gravity) to get a percentage value, and then multiply that 
+      // by 90 to convert to degrees.                                
+      tiltLR = Math.round(((acceleration.x) / 9.81) * -90);
+      tiltFB = Math.round(((acceleration.y + 9.81) / 9.81) * 90 * facingUp);
+
+      
+    }
+    
+    function deviceOrientationHandler(tiltLR, tiltFB){
+            
+      time = Math.round(new Date().getTime());
+      
+	if(id != -1){
+	    socket.emit('deviceOrientation', {id:id, time:time, tiltLR:tiltLR+offsetTiltLR, tiltFB:tiltFB+offsetTiltFB});
+	}
+    }
+    
+    function updateId(form)
+    {
+        id = form.idField.value;
+    }
+
+    function calibrate()
+    {
+        offsetTiltLR = -tiltLR;
+        offsetTiltFB = -tiltFB;
+    }
+    
+    //Displaying and sending data to the websocket is rated in order to avoid client/server overload
+    setInterval(function() {
+        document.getElementById("doTiltLR").innerHTML = tiltLR+offsetTiltLR;
+        document.getElementById("doTiltFB").innerHTML = tiltFB+offsetTiltFB;
+	deviceOrientationHandler(tiltLR, tiltFB);
+    }, sampleFrequency);
+
+</script>
+</body>
+</html>

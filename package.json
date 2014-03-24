@@ -1,0 +1,22 @@
+{
+  "author": "jboulay <jboulay@ekito.fr>",
+  "name": "hamelin",
+  "description": "Nodejs server for Hamelin project",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Ekito/hamelin-nodejs.git"
+  },
+  "main": "server.js",
+  "dependencies": {
+    "connect": "^2.7.11",
+    "express": "^3.5.0",
+    "osc-min": "^0.1.0",
+    "socket.io": "^0.9.16"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "engines": {
+    "node": "0.10.x"
+  }
+}
