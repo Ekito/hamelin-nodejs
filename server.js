@@ -20,7 +20,7 @@ sendHeartbeat = function(myValue1, myValue2) {
 //setInterval(sendHeartbeat, 2000);
 
 
-server.listen(process.env.PORT || 8080)
+server.listen(process.env.PORT || 8080);
 
 app.get('/:resource', function (req, res) {
   res.sendfile(__dirname+'/web/'+req.params.resource);
