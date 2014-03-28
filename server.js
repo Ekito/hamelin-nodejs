@@ -4,18 +4,18 @@ var app = require('express')()
   , osc = require('osc-min')
   , dgram = require('dgram');
 
-var udp = dgram.createSocket("udp4");
-
-sendHeartbeat = function(myValue1, myValue2) {
-  var buf;
-  buf = osc.toBuffer({
-    address: "/Fader",
-    args: [
-      myValue1, myValue2
-    ]
-  });
-  return udp.send(buf, 0, buf.length, 8200, "192.168.5.118");
-};
+//var udp = dgram.createSocket("udp4");
+//
+//sendHeartbeat = function(myValue1, myValue2) {
+//  var buf;
+//  buf = osc.toBuffer({
+//    address: "/Fader",
+//    args: [
+//      myValue1, myValue2
+//    ]
+//  });
+//  return udp.send(buf, 0, buf.length, 8200, "192.168.5.118");
+//};
 
 //setInterval(sendHeartbeat, 2000);
 
@@ -42,7 +42,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('deviceOrientation',function (data){
-	sendHeartbeat(data.tiltLR, data.tiltFB);
+//	sendHeartbeat(data.tiltLR, data.tiltFB);
          socket.broadcast.emit('deviceOrientation', data);
      });
 });
