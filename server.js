@@ -55,7 +55,6 @@ sendOSC = function(myValue1, myValue2) {
 /**
  * Socket.io connection management
  */
-var id = 0;
 var monitor;
 
 io.set('log level', 1);
@@ -68,6 +67,7 @@ io.sockets.on('connection', function(socket) {
 	console.log(new Date() + "Connected on socket.io with ID: " + socket.id);
 
 	socket.on('getId', function(data) {
+		console.log(new Date() + "Send new id for client " + socket.id);
 		socket.emit('id', index);
 	});
 	
@@ -96,8 +96,10 @@ io.sockets.on('connection', function(socket) {
 	
 	socket.on('disconnect', function(){
 		if (isMonitor) {
+			console.log(new Date() + "Removing monitor at index " + index);
 			monitors.splice(index, 1);
 		}else {
+			console.log(new Date() + "Removing client at index " + index);
 			clients.splice(index, 1);	
 		}
 		
