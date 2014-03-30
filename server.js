@@ -1,19 +1,15 @@
 /**
  * Init all modules and servers
  */
-var app = require('express')();
-var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
+var express = require('express'),
+	routes = require('./routes'),
+	http = require('http'),
+	path = require('path'),
+	SocketIO = require('socket.io');
+
 var osc = require('osc-min');
 var dgram = require('dgram');
-
 var udp = dgram.createSocket("udp4");
-
-var serverPort = process.env.PORT || 8080;
-
-server.listen(serverPort, function() {
-	console.log((new Date()) + " Server is listening on port " + serverPort);
-});
 
 /**
  * Init socket clients registries  
@@ -31,20 +27,39 @@ var monitors = [ ];
 
 //statistics variable
 var statsFrequency = 300;
+
 /**
- * Init static resources path
+ * Init Web Application
  */
-app.get('/:resource', function(req, res) {
-	res.sendfile(__dirname + '/web/' + req.params.resource);
+var serverPort = process.env.PORT || 8080;
+var app = express();
+
+app.configure(function(){
+  app.set('port', serverPort);
+  app.set('views', __dirname + '/views');
+  app.set('view engine', 'jade');
+  app.use(express.favicon());
+  app.use(express.logger('dev'));
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(app.router);
+  app.use(require('stylus').middleware(__dirname + '/public'));
+  app.use(express.static(path.join(__dirname, 'public')));
 });
 
-app.get('/js/:resource', function(req, res) {
-	res.sendfile(__dirname + '/web/js/' + req.params.resource);
+app.configure('development', function(){
+  app.use(express.errorHandler());
+    app.locals.pretty = true;
 });
 
-app.get('/icons/:resource', function(req, res) {
-	res.sendfile(__dirname + '/web/icons/' + req.params.resource);
+app.get('/', routes.index);
+
+var server = http.createServer(app);
+server.listen(app.get('port'), function(){
+	console.log((new Date()) + " Server is listening on port " + serverPort);
 });
+
+var io = SocketIO.listen(server);
 
 /**
  * Send OSC message
@@ -87,7 +102,7 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	socket.on('deviceOrientation', function(data) {
-		console.log(new Date() + "Receive device orientation: " + socket.id);
+//		console.log(new Date() + "Receive device orientation: " + socket.id);
 		
 		recordDeviceOrientation(index, data);
 		
@@ -140,9 +155,9 @@ sendToMonitors = function(event, data){
 sendStatsToMonitors = function(){
 	var time = new Date().getTime();
 	var stdDevTiltLR = standardDeviation(tiltLRs);
-	console.log("stdDevTiltLR" + stdDevTiltLR);
+//	console.log("stdDevTiltLR" + stdDevTiltLR);
 	var stdDevTiltFB = standardDeviation(tiltFBs);
-	console.log("stdDevTiltFB" + stdDevTiltFB);
+//	console.log("stdDevTiltFB" + stdDevTiltFB);
 	sendToMonitors('standardDeviation', {stdDevTiltLR: stdDevTiltLR, stdDevTiltFB: stdDevTiltFB, time: time});
 };
 

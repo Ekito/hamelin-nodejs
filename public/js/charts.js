@@ -1,29 +1,3 @@
-<!DOCTYPE HTML>
-<html>
-
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Mobile Gyroscope Charts</title>
-
-<style>
-.buttonBar {
-	margin-left: auto;
-	margin-right: auto;
-	width: 60px;
-	height: 60px;
-}
-
-.chart {
-	margin: auto;
-	height: 300px;
-	width: 66%;
-}
-</style>
-
-<script type="text/javascript" src="socket.io/socket.io.js"></script>
-<script type="text/javascript" src="js/canvasjs.min.js"></script>
-
-<script type="text/javascript">
 	var isResume = true;
 	var pauseLength = 0;
 	var resumeLength = 0;
@@ -40,7 +14,7 @@
 	
 	socket.on('standardDeviation', standardDeviationListener);
 	
-	window.onload = function() {
+	$( function() {
 
 		var playSpan = document.getElementById('play');
 		playSpan.style.display = 'none';
@@ -53,7 +27,7 @@
 		lrChart.render();
 		fbChart.render();
 
-	}
+	});
 
 	function createOrientationChart(chartName, title) {
 		var orientationChart = new CanvasJS.Chart(chartName, {
@@ -95,7 +69,7 @@
 		});
 
 		return orientationChart;
-	}
+	};
 
 	function deviceOrientationListener(eventData) {
 		console.log("deviceOrientation for mobile : " + eventData.id);
@@ -116,11 +90,11 @@
 
 			}
 		}
-	}
+	};
 	
 	function standardDeviationListener(eventData) {
 		console.log("standardDeviation : tiltLR = " + eventData.stdDevTiltLR + ", tiltFB = " + eventData.stdDevTiltFB + ", time = " + eventData.time);
-	}
+	};
 
 	function pushData(chart, id, xValue, yValue) {
 		if (chart.options.data[id] == null) {
@@ -139,7 +113,7 @@
 			x : xValue,
 			y : yValue,
 		});
-	}
+	};
 
 	//Refresh the chart every timelineFrequency
 	setInterval(
@@ -188,7 +162,7 @@
 		resumeLengthDate.setTime(pauseTime - resumeTime);
 		resumeLength = resumeLength + resumeLengthDate.getTime() / 1000;
 		togglePauseResume();
-	}
+	};
 
 	function resume() {
 		resumeTime = new Date().getTime();
@@ -197,7 +171,7 @@
 		pauseLength = pauseLength + pauseLengthDate.getTime() / 1000;
 		isResume = true;
 		togglePauseResume();
-	}
+	};
 
 	function togglePauseResume() {
 		var playSpan = document.getElementById('play');
@@ -207,21 +181,4 @@
 		pauseSpan.style.display = pauseSpan.style.display == 'none' ? 'block'
 				: 'none';
 
-	}
-</script>
-
-
-</head>
-<body>
-	<div id="buttonBar" class="buttonBar">
-		<span id="play"><img src="icons/media-playback-start.png"
-			height="60" width="60" alt="Play" style="cursor: pointer;"
-			onclick="resume();" /></span> <span id="pause"><img
-			src="icons/media-playback-pause.png" height="60" width="60"
-			alt="Play" style="cursor: pointer;" onclick="pause();" /></span>
-	</div>
-	<div id="lrChart" class="chart"></div>
-	<div id="fbChart" class="chart"></div>
-
-</body>
-</html>
+	};

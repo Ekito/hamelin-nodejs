@@ -1,0 +1,17 @@
+extends layout
+
+block content
+	div.container
+		div.row
+			div.col-md-5
+			div.col-md-1
+					a.glyphicon.glyphicon-play(onclick="resume()")#play
+					a.glyphicon.glyphicon-pause(onclick="pause()")#pause
+
+		div.row
+			div.col-md-6
+				div#lrChart.chart
+			div.col-md-6
+				div#fbChart.chart
+			
+		
