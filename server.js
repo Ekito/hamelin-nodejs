@@ -21,9 +21,16 @@ server.listen(serverPort, function() {
 //list of currently connected clients (users)
 var clients = [ ];
 
+//Device orientation data are split in arrays for easier calculation
+var tiltLRs = [ ];
+var tiltFBs = [ ];
+var times = [ ];
+
 //list of currently connected monitors
 var monitors = [ ];
 
+//statistics variable
+var statsFrequency = 300;
 /**
  * Init static resources path
  */
@@ -60,7 +67,7 @@ var monitor;
 io.set('log level', 1);
 io.sockets.on('connection', function(socket) {
 
-	var index = clients.push(socket) - 1;
+	var index = registerClient(socket);
 	var isMonitor = false;
 	
 	
@@ -68,7 +75,7 @@ io.sockets.on('connection', function(socket) {
 
 	socket.on('getId', function(data) {
 		console.log(new Date() + "Send new id for client " + socket.id);
-		socket.emit('id', index);
+		socket.emit('id', index + 1);
 	});
 	
 	socket.on('registerMonitor', function(data) {
@@ -82,11 +89,9 @@ io.sockets.on('connection', function(socket) {
 	socket.on('deviceOrientation', function(data) {
 		console.log(new Date() + "Receive device orientation: " + socket.id);
 		
-        for (var i = 0; i < monitors.length; i ++) { // broad cast on all monitors
-            if (monitors[i]) {
-            	monitors[i].emit('deviceOrientation', data);
-            }
-        }
+		recordDeviceOrientation(index, data);
+		
+		sendToMonitors('deviceOrientation', data);
 		
 		//Send OSC message to the server
 		//	sendOSC(data.tiltLR, data.tiltFB);
@@ -104,4 +109,74 @@ io.sockets.on('connection', function(socket) {
 		}
 		
 	});
+	
+	//Refresh statistics
+	setInterval(function() {
+		sendStatsToMonitors();
+	}, statsFrequency);
 });
+
+registerClient = function(socket){
+	var index = clients.push(socket) - 1;
+	time = Math.round(new Date().getTime());
+	tiltLRs.push(0);
+	tiltFBs.push(0);
+	times.push(time);
+	return index;
+};
+
+/**
+ * Monitoring functions
+ */
+sendToMonitors = function(event, data){
+//	console.log("Send " + event + " to " + monitors.length + " monitor(s).");
+	for (var i = 0; i < monitors.length; i ++) { // broad cast on all monitors
+        if (monitors[i]) {
+        	monitors[i].emit(event, data);
+        }
+    }
+};
+
+sendStatsToMonitors = function(){
+	var time = new Date().getTime();
+	var stdDevTiltLR = standardDeviation(tiltLRs);
+	console.log("stdDevTiltLR" + stdDevTiltLR);
+	var stdDevTiltFB = standardDeviation(tiltFBs);
+	console.log("stdDevTiltFB" + stdDevTiltFB);
+	sendToMonitors('standardDeviation', {stdDevTiltLR: stdDevTiltLR, stdDevTiltFB: stdDevTiltFB, time: time});
+};
+
+/**
+ * DeviceOrientation management
+ */
+recordDeviceOrientation = function(index, data){
+//	console.log("Record deviceOrientation : " + data);
+	tiltLRs[index] = data.tiltLR;
+	tiltFBs[index] = data.tiltFB;
+	times[index] = data.time;
+};
+
+/**
+ * Statistics computation
+ */
+standardDeviation = function(array){
+	var avg = average(array);
+	var sum = 0;
+	
+	for ( var int = 0; int < array.length; int++) {
+		sum += Math.pow((array[int] - avg), 2);
+	}
+	
+	stdDev = sum / array.length;
+	
+	return stdDev;
+};
+
+average = function(array){
+	//Compute the average of values
+	var sum = 0;
+	for ( var int = 0; int < array.length; int++) {
+		sum += array[int];
+	}
+	return sum / array.length;
+};

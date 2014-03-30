@@ -38,6 +38,8 @@
 	
 	socket.on('deviceOrientation', deviceOrientationListener);
 	
+	socket.on('standardDeviation', standardDeviationListener);
+	
 	window.onload = function() {
 
 		var playSpan = document.getElementById('play');
@@ -96,6 +98,7 @@
 	}
 
 	function deviceOrientationListener(eventData) {
+		console.log("deviceOrientation for mobile : " + eventData.id);
 		if (isResume) {
 			var id = eventData.id;
 
@@ -113,6 +116,10 @@
 
 			}
 		}
+	}
+	
+	function standardDeviationListener(eventData) {
+		console.log("standardDeviation : tiltLR = " + eventData.stdDevTiltLR + ", tiltFB = " + eventData.stdDevTiltFB + ", time = " + eventData.time);
 	}
 
 	function pushData(chart, id, xValue, yValue) {
