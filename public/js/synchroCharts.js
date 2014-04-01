@@ -10,6 +10,10 @@
 	var socket = io.connect(document.location.host);
 	socket.emit('registerMonitor');
 	
+	window.onbeforeunload = function (e) {
+		socket.emit('unregisterMonitor');
+	};
+	
 	socket.on('standardDeviation', standardDeviationListener);
 	
 	$( function() {
@@ -28,7 +32,7 @@
 	});
 
 	function standardDeviationListener(eventData) {
-		console.log("standardDeviation : left/right = " + eventData.stdDevTiltLR + " front/back = " + eventData.stdDevTiltFB);
+//		console.log("standardDeviation : left/right = " + eventData.stdDevTiltLR + " front/back = " + eventData.stdDevTiltFB);
 		if (isResume) {
 				var currentLength = new Date();
 				currentLength.setTime(new Date().getTime() - resumeTime);
@@ -38,8 +42,8 @@
 				tiltLRValue = eventData.stdDevTiltLR;
 				tiltFBValue = eventData.stdDevTiltFB;
 
-				pushData(lrChart, "Deviation", 0, timeInSeconds, tiltLRValue);
-				pushData(fbChart, "Deviation", 0, timeInSeconds, tiltFBValue);
+				pushData(lrChart, "Deviation", 1, timeInSeconds, tiltLRValue);
+				pushData(fbChart, "Deviation", 1, timeInSeconds, tiltFBValue);
 
 		}
 	};

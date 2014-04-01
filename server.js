@@ -101,7 +101,14 @@ io.sockets.on('connection', function(socket) {
 		//Remove from the clients list and add it to the monitors
 		clients.splice(index, 1);
 		index = monitors.push(socket) - 1;
+		isMonitor = true;
 		
+	});
+	
+	socket.on('unregisterMonitor', function(data) {
+		console.log(new Date() + "Receive unregister monitor: " + socket.id);
+		//Remove from the monitors list
+		monitors.splice(index, 1);
 	});
 
 	socket.on('deviceOrientation', function(data) {
@@ -119,8 +126,7 @@ io.sockets.on('connection', function(socket) {
 	
 	socket.on('disconnect', function(){
 		if (isMonitor) {
-			console.log(new Date() + "Removing monitor at index " + index);
-			monitors.splice(index, 1);
+			//Nothing to do the monitor is unregistered when leaving the page
 		}else {
 			console.log(new Date() + "Removing client at index " + index);
 			clients.splice(index, 1);	
@@ -128,11 +134,12 @@ io.sockets.on('connection', function(socket) {
 		
 	});
 	
-	//Refresh statistics
-	setInterval(function() {
-		sendStatsToMonitors();
-	}, statsFrequency);
 });
+
+//Refresh statistics
+setInterval(function() {
+	sendStatsToMonitors();
+}, statsFrequency);
 
 registerClient = function(socket){
 	var index = clients.push(socket) - 1;

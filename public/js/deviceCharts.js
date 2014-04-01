@@ -10,6 +10,10 @@
 	var socket = io.connect(document.location.host);
 	socket.emit('registerMonitor');
 	
+	window.onbeforeunload = function (e) {
+		socket.emit('unregisterMonitor');
+	};
+	
 	socket.on('deviceOrientation', deviceOrientationListener);
 	
 	$( function() {
