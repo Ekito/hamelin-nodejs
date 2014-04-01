@@ -99,7 +99,7 @@ io.sockets.on('connection', function(socket) {
 	socket.on('registerMonitor', function(data) {
 		console.log(new Date() + "Receive register monitor: " + socket.id);
 		//Remove from the clients list and add it to the monitors
-		clients.splice(index, 1);
+		unregisterClient(index);
 		index = monitors.push(socket) - 1;
 		isMonitor = true;
 		
@@ -129,7 +129,7 @@ io.sockets.on('connection', function(socket) {
 			//Nothing to do the monitor is unregistered when leaving the page
 		}else {
 			console.log(new Date() + "Removing client at index " + index);
-			clients.splice(index, 1);	
+			unregisterClient(index);
 		}
 		
 	});
@@ -141,12 +141,30 @@ setInterval(function() {
 	sendStatsToMonitors();
 }, statsFrequency);
 
+//Refresh statistics
+setInterval(function() {
+	console.log("Connected clients : " + clients.length);
+	console.log("Connected monitors : " + monitors.length);
+	console.log("tiltLRs : " + tiltLRs.length);
+	console.log("tiltFBs : " + tiltFBs.length);
+	console.log("times : " + times.length);
+	
+}, 5000);
+
 registerClient = function(socket){
 	var index = clients.push(socket) - 1;
 	time = Math.round(new Date().getTime());
 	tiltLRs.push(0);
 	tiltFBs.push(0);
 	times.push(time);
+	return index;
+};
+
+unregisterClient = function(index){
+	clients.splice(index, 1);
+	tiltLRs.splice(index, 1);
+	tiltFBs.splice(index, 1);
+	times.splice(index, 1);
 	return index;
 };
 
