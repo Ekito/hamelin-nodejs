@@ -3,7 +3,7 @@ html
 	head
 		block head
 			block title
-				title Program Name
+				title #{title} | Hamelin
 			block meta
 				meta(name='description', content='')
 				meta(name='keywords', content='')
@@ -12,10 +12,8 @@ html
 			| body { padding-top: 60px; }
 			| </style>
 			script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
-			script(src='js/libs/canvasjs.min.js')
 			script(src='js/libs/bootstrap.min.js')
 			script(src='socket.io/socket.io.js')
-			script(src='js/charts.js')
 			
 	body
 		include header

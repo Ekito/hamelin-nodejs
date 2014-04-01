@@ -53,6 +53,8 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
+app.get('/charts', routes.charts);
+app.get('/console', routes.console);
 
 var server = http.createServer(app);
 server.listen(app.get('port'), function(){

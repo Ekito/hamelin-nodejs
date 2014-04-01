@@ -1,0 +1,13 @@
+div.chart{
+	width: 500px;
+	height: 280px;
+}
+div.chart>div{
+	width: 500px;
+	height: 280px;
+}
+
+div.chart>div>canvas{
+	width: 500px;
+	height: 280px;
+}
