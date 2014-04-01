@@ -6,7 +6,8 @@
 	var pauseTime = 0;
 	var lrChart;
 	var fbChart;
-
+	var indexMap = [];
+	
 	var socket = io.connect(document.location.host);
 	
 	window.onbeforeunload = function (e) {
@@ -36,7 +37,7 @@
 	});
 
 	function deviceOrientationListener(eventData) {
-		console.log("deviceOrientation for mobile : " + eventData.id);
+//		console.log("deviceOrientation for mobile : " + eventData.id);
 		if (isResume) {
 			var id = eventData.id;
 
@@ -49,8 +50,15 @@
 				tiltLRValue = eventData.tiltLR;
 				tiltFBValue = eventData.tiltFB;
 
-				pushData(lrChart, "Smartphone " + id, id, timeInSeconds, tiltLRValue);
-				pushData(fbChart, "Smartphone " + id, id, timeInSeconds, tiltFBValue);
+				var index = indexMap[id];
+				if (index == null)
+				{
+					index = createSerie(lrChart, "Smartphone " + id);
+					index = createSerie(fbChart, "Smartphone " + id);
+					indexMap[id] = index;
+				}
+				pushData(lrChart, index, timeInSeconds, tiltLRValue);
+				pushData(fbChart, index, timeInSeconds, tiltFBValue);
 
 			}
 		}
@@ -65,11 +73,19 @@
 					var timeInSeconds = (currentLength.getTime() / 1000)
 							+ resumeLength;
 
-					refreshChart(lrChart, timeInSeconds);
-					refreshChart(fbChart, timeInSeconds);
+					refreshChart(lrChart, timeInSeconds, removeFromIndexMap);
+					refreshChart(fbChart, timeInSeconds, removeFromIndexMap);
 				}
-			}, timelineFrequency);
+			}, timelineFrequency
+	);
 
+	var removeFromIndexMap = function(index){
+		var idx = indexMap.indexOf(index);
+		if (idx != null) {
+			indexMap.splice(idx, 1);
+		}
+	};
+	
 	function pause() {
 		isResume = false;
 		pauseTime = new Date().getTime();

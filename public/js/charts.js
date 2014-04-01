@@ -40,27 +40,26 @@
 		return chart;
 	};
 
-	var pushData = function (chart, name, id, xValue, yValue) {
-		if (chart.options.data[id] == null) {
-			chart.options.data[id] = {
-				// dataSeries n°id
-				markerType : "circle",
-				type : "spline",
-				xValueType : "number",
-				showInLegend : true,
-				name : name,
-				dataPoints : []
-			};
-		}
-
-		chart.options.data[id].dataPoints.push({
+	var createSerie = function(chart, name) {
+		return chart.options.data.push({
+			markerType : "circle",
+			type : "spline",
+			xValueType : "number",
+			showInLegend : true,
+			name : name,
+			dataPoints : []
+		}) - 1;
+	};
+	
+	var pushData = function (chart, index, xValue, yValue) {
+		chart.options.data[index].dataPoints.push({
 			x : xValue,
 			y : yValue,
 		});
 	};
 
 	//Refresh the chart every timelineFrequency
-	var refreshChart = function(chart, time) {
+	var refreshChart = function(chart, time, onRemove) {
 
 			//Push Timeline data
 			chart.options.data[0].dataPoints.push({
@@ -70,9 +69,16 @@
 
 			//For each datapoint, removes values older than 5s
 			for ( var i = 0; i < chart.options.data.length; i++) {
-				if (chart.options.data[i].dataPoints[0] != null
+				if (chart.options.data[i] != null
+						&& chart.options.data[i].dataPoints[0] != null
 						&& chart.options.data[i].dataPoints[0].x < time - 5) {
 					chart.options.data[i].dataPoints.shift();
+				}
+				//Purge data when they doesn't exists anymore 
+				if (chart.options.data[i] != null
+						&& chart.options.data[i].dataPoints.length == 0) {
+					chart.options.data.splice(i,1);
+					onRemove(i);
 				}
 			}
 
