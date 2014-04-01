@@ -10,7 +10,13 @@ div.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
 			
 		div.collapse.navbar-collapse
 			ul.nav.navbar-nav
-				li(class=title=='Monitoring'?'active':undefined)
-					a(href="/charts") Monitoring
+				li.dropdown(class=title=='Monitoring'?'active':undefined)
+					a.dropdown-toggle(href="#" data-toggle="dropdown") Monitoring
+						b.caret
+					ul.dropdown-menu
+						li
+							a(href="/deviceCharts") Smartphones
+						li
+							a(href="/synchroCharts") Synchronisation
 				li(class=title=='Console'?'active':undefined)
 					a(href="/console") Console

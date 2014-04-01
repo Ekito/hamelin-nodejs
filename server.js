@@ -53,7 +53,8 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-app.get('/charts', routes.charts);
+app.get('/deviceCharts', routes.deviceCharts);
+app.get('/synchroCharts', routes.synchroCharts);
 app.get('/console', routes.console);
 
 var server = http.createServer(app);
