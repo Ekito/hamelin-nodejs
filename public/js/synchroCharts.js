@@ -28,6 +28,10 @@
 		lrChart = createChart("lrChart", "Left-Right", "Deviation");
 		fbChart = createChart("fbChart", "Front-Back", "Deviation");
 
+		//Create default series on init
+		createSerie(lrChart, "Deviation");
+		createSerie(fbChart, "Deviation");
+
 		resumeTime = new Date().getTime();
 
 		lrChart.render();
@@ -46,8 +50,8 @@
 				tiltLRValue = eventData.stdDevTiltLR;
 				tiltFBValue = eventData.stdDevTiltFB;
 
-				pushData(lrChart, "Deviation", 1, timeInSeconds, tiltLRValue);
-				pushData(fbChart, "Deviation", 1, timeInSeconds, tiltFBValue);
+				pushData(lrChart, 1, timeInSeconds, tiltLRValue);
+				pushData(fbChart, 1, timeInSeconds, tiltFBValue);
 
 		}
 	};
@@ -61,8 +65,8 @@
 					var timeInSeconds = (currentLength.getTime() / 1000)
 							+ resumeLength;
 
-					refreshChart(lrChart, timeInSeconds);
-					refreshChart(fbChart, timeInSeconds);
+					refreshChart(lrChart, timeInSeconds, function(){});
+					refreshChart(fbChart, timeInSeconds, function(){});
 				}
 			}, timelineFrequency);
 

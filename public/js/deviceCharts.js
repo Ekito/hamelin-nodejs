@@ -73,17 +73,24 @@
 					var timeInSeconds = (currentLength.getTime() / 1000)
 							+ resumeLength;
 
-					refreshChart(lrChart, timeInSeconds, removeFromIndexMap);
-					refreshChart(fbChart, timeInSeconds, removeFromIndexMap);
+					refreshChart(lrChart, timeInSeconds, purgeInactiveDevice);
+					refreshChart(fbChart, timeInSeconds, purgeInactiveDevice);
 				}
 			}, timelineFrequency
 	);
 
-	var removeFromIndexMap = function(index){
-		var idx = indexMap.indexOf(index);
-		if (idx != null) {
-			indexMap.splice(idx, 1);
+	var purgeInactiveDevice = function(chart, index){
+		//Purge data when they doesn't exists anymore 
+		if (chart.options.data[index] != null
+				&& chart.options.data[index].dataPoints.length == 0) {
+			chart.options.data.splice(index,1);
+			
+			var idx = indexMap.indexOf(index);
+			if (idx != null) {
+				indexMap.splice(idx, 1);
+			}
 		}
+		
 	};
 	
 	function pause() {
