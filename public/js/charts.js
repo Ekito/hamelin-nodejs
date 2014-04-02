@@ -74,12 +74,7 @@
 						&& chart.options.data[i].dataPoints[0].x < time - 5) {
 					chart.options.data[i].dataPoints.shift();
 				}
-				//Purge data when they doesn't exists anymore 
-				if (chart.options.data[i] != null
-						&& chart.options.data[i].dataPoints.length == 0) {
-					chart.options.data.splice(i,1);
-					onRemove(i);
-				}
+				onRemove(chart, i);
 			}
 
 			chart.render();
