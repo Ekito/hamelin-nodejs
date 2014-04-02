@@ -26,7 +26,7 @@ var times = [ ];
 var monitors = [ ];
 
 //statistics variable
-var statsFrequency = 300;
+var statsFrequency = 100;
 
 /**
  * Init Web Application
@@ -210,7 +210,7 @@ standardDeviation = function(array){
 		sum += Math.pow((array[int] - avg), 2);
 	}
 	
-	stdDev = sum / array.length;
+	stdDev = Math.sqrt(sum / array.length);
 	
 	return stdDev;
 };

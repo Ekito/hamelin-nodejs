@@ -6,7 +6,7 @@
 	var pauseTime = 0;
 	var lrChart;
 	var fbChart;
-	var indexMap = [];
+	var devices = [];
 	
 	var socket = io.connect(document.location.host);
 	
@@ -50,15 +50,24 @@
 				tiltLRValue = eventData.tiltLR;
 				tiltFBValue = eventData.tiltFB;
 
-				var index = indexMap[id];
-				if (index == null)
+				var device = null; 
+				devices.map(function(element){
+					if (element.id == id) {
+						device = element;
+					}
+				});
+				
+				if (device == null)
 				{
-					index = createSerie(lrChart, "Smartphone " + id);
-					index = createSerie(fbChart, "Smartphone " + id);
-					indexMap[id] = index;
+					var deviceName = "Smartphone " + id;
+					index = createSerie(lrChart, deviceName);
+					index = createSerie(fbChart, deviceName);
+					
+					device = {id: id, index:index, name: deviceName };
+					devices.push(device);
 				}
-				pushData(lrChart, index, timeInSeconds, tiltLRValue);
-				pushData(fbChart, index, timeInSeconds, tiltFBValue);
+				pushData(lrChart, device.index, timeInSeconds, tiltLRValue);
+				pushData(fbChart, device.index, timeInSeconds, tiltFBValue);
 
 			}
 		}
@@ -85,10 +94,13 @@
 				&& chart.options.data[index].dataPoints.length == 0) {
 			chart.options.data.splice(index,1);
 			
-			var idx = indexMap.indexOf(index);
-			if (idx != null) {
-				indexMap.splice(idx, 1);
-			}
+			//Remove the device 
+			devices.map(function(element, i){
+				if (element.index == index) {
+					devices.splice(i);
+				}
+			});
+			
 		}
 		
 	};
