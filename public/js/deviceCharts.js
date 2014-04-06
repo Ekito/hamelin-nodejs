@@ -77,9 +77,9 @@
 	setInterval(
 			function() {
 				if (isResume) {
-					var currentLength = new Date();
-					currentLength.setTime(new Date().getTime() - resumeTime);
-					var timeInSeconds = (currentLength.getTime() / 1000)
+					
+					var currentLength = new Date().getTime() - resumeTime;
+					var timeInSeconds = (currentLength / 1000)
 							+ resumeLength;
 
 					refreshChart(lrChart, timeInSeconds, purgeInactiveDevice);
@@ -108,17 +108,13 @@
 	function pause() {
 		isResume = false;
 		pauseTime = new Date().getTime();
-		var resumeLengthDate = new Date();
-		resumeLengthDate.setTime(pauseTime - resumeTime);
-		resumeLength = resumeLength + resumeLengthDate.getTime() / 1000;
+		resumeLength = resumeLength + (pauseTime - resumeTime) / 1000;
 		togglePauseResume();
 	};
 
 	function resume() {
 		resumeTime = new Date().getTime();
-		var pauseLengthDate = new Date();
-		pauseLengthDate.setTime(pauseLength + resumeTime - pauseTime);
-		pauseLength = pauseLength + pauseLengthDate.getTime() / 1000;
+		pauseLength = pauseLength + (pauseLength + resumeTime - pauseTime) / 1000;
 		isResume = true;
 		togglePauseResume();
 	};
