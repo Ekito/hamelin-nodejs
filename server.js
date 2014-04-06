@@ -71,10 +71,10 @@ var io = SocketIO.listen(server);
 sendOSC = function(myValue1, myValue2) {
 	var buf;
 	buf = osc.toBuffer({
-		address : "/Fader",
+		address : "/hamelin/deviation",
 		args : [ myValue1, myValue2 ]
 	});
-	return udp.send(buf, 0, buf.length, 8200, "192.168.5.118");
+	return udp.send(buf, 0, buf.length, 8200, "192.168.5.119");
 };
 
 /**
@@ -118,10 +118,6 @@ io.sockets.on('connection', function(socket) {
 		
 		sendToMonitors('deviceOrientation', data);
 		
-		//Send OSC message to the server
-		//	sendOSC(data.tiltLR, data.tiltFB);
-		
-
 	});
 	
 	socket.on('disconnect', function(){
@@ -144,7 +140,13 @@ setInterval(function() {
 //Refresh statistics
 setInterval(function() {
 	console.log("Connected clients : " + clients.length);
+	clients.forEach(function(socket){
+		console.log(socket.id);
+	})
 	console.log("Connected monitors : " + monitors.length);
+	monitors.forEach(function(socket){
+		console.log(socket.id);
+	})
 	console.log("tiltLRs : " + tiltLRs.length);
 	console.log("tiltFBs : " + tiltFBs.length);
 	console.log("times : " + times.length);
@@ -187,6 +189,8 @@ sendStatsToMonitors = function(){
 	var stdDevTiltFB = standardDeviation(tiltFBs);
 //	console.log("stdDevTiltFB" + stdDevTiltFB);
 	sendToMonitors('standardDeviation', {stdDevTiltLR: stdDevTiltLR, stdDevTiltFB: stdDevTiltFB, time: time});
+	
+	sendOSC(stdDevTiltLR / 90, stdDevTiltFB / 90);
 };
 
 /**
