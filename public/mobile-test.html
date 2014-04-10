@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Hamelin</title>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<style>
+#no {
+	display: none;
+}
+
+@media screen {
+	html,body,div,span {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		outline: 0;
+		font-size: 100%;
+		vertical-align: baseline;
+	}
+	body {
+		height: auto;
+		-webkit-text-size-adjust: none;
+		font-family: Helvetica, Arial, Verdana, sans-serif;
+		padding: 0px;
+		overflow-x: hidden;
+	}
+	.box {
+		position: relative;
+		float: left;
+		width: 100%;
+		padding: 7px;
+		border: 1px solid rgba(255, 255, 255, 0.6);
+		background: rgba(178, 215, 255, 0.75);
+		min-height: 160px;
+	}
+}
+</style>
+</head>
+
+<body>
+	<div class="box" id="gyro">
+		<h1>Hamelin gyro tracker</h1>
+		<table>
+			<tr>
+				<td>Identifiant :</td>
+				<td id="idField"></td>
+			</tr>
+			<tr>
+				<td>Evènement supporté</td>
+				<td id="doEvent"></td>
+			</tr>
+			<tr>
+				<td>Gauche / Droite</td>
+				<td id="doTiltLR"></td>
+			</tr>
+			<tr>
+				<td>Avant / Arrière</td>
+				<td id="doTiltFB"></td>
+			</tr>
+		</table>
+	</div>
+
+	<script type="text/javascript" src="/js/libs/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="/js/mobile.js"></script>
+</body>
+</html>

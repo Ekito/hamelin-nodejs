@@ -6,79 +6,29 @@
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <style>
-#no {
-	display: none;
-}
-
 @media screen {
-	html,body,div,span {
-		margin: 0;
-		padding: 0;
-		border: 0;
-		outline: 0;
-		font-size: 100%;
-		vertical-align: baseline;
-	}
-	body {
-		height: auto;
-		-webkit-text-size-adjust: none;
-		font-family: Helvetica, Arial, Verdana, sans-serif;
-		padding: 0px;
-		overflow-x: hidden;
-	}
-	.outer {
-		background: rgba(123, 256, 245, 0.9);
-		padding: 0px;
-		min-height: 48px;
-	}
-	.box {
-		position: relative;
-		float: left;
-		width: 100%;
-		padding: 7px;
-		border: 1px solid rgba(255, 255, 255, 0.6);
-		background: rgba(178, 215, 255, 0.75);
-		min-height: 160px;
-	}
-	.box span {
-		display: block;
-	}
-	span.head {
-		font-weight: bold;
+	#bg {
+	    position: absolute;
+	    top: 0;
+	    bottom: 0;
+	    left: 0;
+	    right: 0;
+	    width: 100%;
+	    height: 100%;
+	    background-color: #000000;
 	}
 }
 </style>
 </head>
 
 <body>
-	<div id="yes">
-		<div class="box" id="gyro">
-			<h1>Hamelin gyro tracker</h1>
-			<table>
-				<tr>
-					<td>Identifiant :</td>
-					<td id="idField"></td>
-				</tr>
-				<tr>
-					<td>Evènement supporté</td>
-					<td id="doEvent"></td>
-				</tr>
-				<tr>
-					<td>Gauche / Droite</td>
-					<td id="doTiltLR"></td>
-				</tr>
-				<tr>
-					<td>Avant / Arrière</td>
-					<td id="doTiltFB"></td>
-				</tr>
-			</table>
-		</div>
-
+	<div id="bg">
+	<!-- <input type="button" value="Change color" onclick='$("#bg").animate({ backgroundColor: "olive" }, "slow");'> -->
 	</div>
-
-	<div id="no">Votre téléphone ne supporte pas l'application Hamelin</div>
-
-
+	
+	
+	<script type="text/javascript" src="/js/libs/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript" src="/js/libs/jquery-color.js"></script>
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="/js/mobile.js"></script>
 </body>

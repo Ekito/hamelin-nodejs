@@ -5,6 +5,7 @@ var offsetTiltFB = 0;
 var offsetTiltLR = 0;
 var time = 0;
 var id = -1;
+var eventDetectionStatus = document.getElementById("doEvent");
 
 var socket = io.connect(document.location.host);
 
@@ -15,24 +16,31 @@ socket.on('connect', function(){
 socket.on('id', function(data) {
 	id = data;
 	var idField = window.document.getElementById('idField');
-	idField.innerHTML = id;
+	if (idField != null){
+		idField.innerHTML = id;
+	}
 });
 
 if (window.DeviceOrientationEvent) {
-
-	document.getElementById("doEvent").innerHTML = "DeviceOrientation";
+	
+	
+	if (eventDetectionStatus != null) {
+		eventDetectionStatus.innerHTML = "DeviceOrientation";
+	}
 	// Listen for the deviceorientation event and handle the raw data
 	window.addEventListener('deviceorientation',
 			deviceOrientationListener, false);
 
 } else if (window.OrientationEvent) {
 
-	document.getElementById("doEvent").innerHTML = "MozOrientation";
+	if (eventDetectionStatus != null) {
+	eventDetectionStatus.innerHTML = "MozOrientation";
+	}
 	window.addEventListener('MozOrientation', mozOrientationListener,
 			false);
 
-} else {
-	document.getElementById("doEvent").innerHTML = "Not supported on your device or browser."
+} else if (eventDetectionStatus != null) {
+		eventDetectionStatus.innerHTML = "Not supported on your device or browser.";
 }
 
 function deviceOrientationListener(eventData) {
@@ -43,11 +51,13 @@ function deviceOrientationListener(eventData) {
 	if (eventData.gamma == null && eventData.beta == null) {
 		//deviceOrientation is not managed, deviceorientation listener is called only one time
 		if (window.DeviceMotionEvent) {
-			document.getElementById("doEvent").innerHTML = "DeviceMotion";
+			if (eventDetectionStatus != null) {
+				eventDetectionStatus.innerHTML = "DeviceMotion";
+			}
 			window.addEventListener('devicemotion',
 					deviceMotionListener, false);
-		} else {
-			document.getElementById("doEvent").innerHTML = "Not supported on your device or browser."
+		} else if (eventDetectionStatus != null) {
+			eventDetectionStatus.innerHTML = "Not supported on your device or browser."
 		}
 
 	} else {
@@ -102,6 +112,8 @@ function deviceOrientationHandler(tiltLR, tiltFB) {
 			tiltLR : tiltLR + offsetTiltLR,
 			tiltFB : tiltFB + offsetTiltFB
 		});
+		
+		
 	}
 }
 
@@ -110,11 +122,28 @@ function calibrate() {
 	offsetTiltFB = -tiltFB;
 }
 
+function FormatNumberLength(num, length) {
+    var r = "" + num;
+    while (r.length < length) {
+        r = "0" + r;
+    }
+    return r;
+}
+
 //Displaying and sending data to the websocket is rated in order to avoid client/server overload
 setInterval(function() {
-	document.getElementById("doTiltLR").innerHTML = tiltLR
-	+ offsetTiltLR;
-	document.getElementById("doTiltFB").innerHTML = tiltFB
-	+ offsetTiltFB;
+	var tiltLRElem = document.getElementById("doTiltLR");
+	
+	if (tiltLRElem != null) {
+		tiltLRElem.innerHTML = tiltLR + offsetTiltLR;
+		document.getElementById("doTiltFB").innerHTML = tiltFB + offsetTiltFB;
+	}
+	
 	deviceOrientationHandler(tiltLR, tiltFB);
+	
+	var seconds = new Date().getSeconds();
+
+	$( "#bg" ).css(
+        'backgroundColor', "rgb(" + Math.abs(tiltFB * 2) + "," + Math.abs(tiltLR * 2) + ", " + seconds * 4 + ")"
+      );
 }, sampleFrequency);
