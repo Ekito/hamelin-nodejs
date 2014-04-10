@@ -26,7 +26,7 @@ var times = [ ];
 var monitors = [ ];
 
 //statistics variable
-var statsFrequency = 100;
+var statsFrequency = 300;
 
 /**
  * Init Web Application
