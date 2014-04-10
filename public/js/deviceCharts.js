@@ -8,15 +8,15 @@
 	var fbChart;
 	var devices = [];
 	
-	var socket = io.connect(document.location.host);
+	var socket = io.connect(document.location.host + '/monitor');
 	
-	window.onbeforeunload = function (e) {
-		socket.emit('unregisterMonitor');
-	};
+//	window.onbeforeunload = function (e) {
+//		socket.emit('unregisterMonitor');
+//	};
 	
 	socket.on('connect', function () {
 		console.log("Connect to socket.io");
-		socket.emit('registerMonitor');
+//		socket.emit('registerMonitor');
 	});
 	
 	socket.on('deviceOrientation', deviceOrientationListener);

@@ -7,7 +7,7 @@ var time = 0;
 var id = -1;
 var eventDetectionStatus = document.getElementById("doEvent");
 
-var socket = io.connect(document.location.host);
+var socket = io.connect(document.location.host + '/devices');
 
 socket.on('connect', function(){
 	socket.emit('getId');
