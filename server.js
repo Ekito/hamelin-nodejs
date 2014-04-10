@@ -190,7 +190,8 @@ sendStatsToMonitors = function(){
 //	console.log("stdDevTiltFB" + stdDevTiltFB);
 	sendToMonitors('standardDeviation', {stdDevTiltLR: stdDevTiltLR, stdDevTiltFB: stdDevTiltFB, time: time});
 	
-	sendOSC(stdDevTiltLR / 90, stdDevTiltFB / 90);
+//	console.log('LR : ' + stdDevTiltLR + ' / FB : ' + stdDevTiltFB);
+	sendOSC(stdDevTiltLR, stdDevTiltFB);
 };
 
 /**
@@ -215,8 +216,12 @@ standardDeviation = function(array){
 	}
 	
 	stdDev = Math.sqrt(sum / array.length);
+	var dev = 1;
+	if (stdDev > 1) {
+		dev = 1 / stdDev;
+	}
 	
-	return stdDev;
+	return dev;
 };
 
 average = function(array){
