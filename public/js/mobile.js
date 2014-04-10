@@ -91,12 +91,22 @@ function deviceMotionListener(eventData) {
 		facingUp = +1;
 	}
 
+	var Xelem = document.getElementById("X");
+	var Yelem = document.getElementById("Y");
+	var Zelem = document.getElementById("Z");
+	
+	if (Xelem != null)
+	{
+		Xelem.innerHTML = acceleration.x;
+		Yelem.innerHTML = acceleration.y;
+		Zelem.innerHTML = acceleration.z;
+	}
 	// Convert the value from acceleration to degrees acceleration.x|y is the 
 	// acceleration according to gravity, we'll assume we're on Earth and divide 
 	// by 9.81 (earth gravity) to get a percentage value, and then multiply that 
 	// by 90 to convert to degrees.                                
 	tiltLR = Math.round(((acceleration.x) / 9.81) * -90);
-	tiltFB = Math.round(((acceleration.y + 9.81) / 9.81) * 90
+	tiltFB = Math.round(((acceleration.y) / 9.81) * 90
 			* facingUp);
 
 }
