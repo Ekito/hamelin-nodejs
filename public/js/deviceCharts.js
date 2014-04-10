@@ -8,7 +8,7 @@
 	var fbChart;
 	var devices = [];
 	
-	var socket = io.connect(document.location.host + '/monitor');
+	var socket = io.connect(document.location.host + '/monitors');
 	
 //	window.onbeforeunload = function (e) {
 //		socket.emit('unregisterMonitor');

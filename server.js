@@ -79,7 +79,7 @@ sendOSC = function(myValue1, myValue2) {
  */
 io.set('log level', 1);
 
-var monitors = io.of('/monitor');
+var monitors = io.of('/monitors');
 
 var devices = io.of('/devices');
 devices.on('connection', function(socket) {
@@ -122,7 +122,10 @@ setInterval(function() {
 		{
 			console.log("Remove socket :" + key + " from connected devices and disconnect.");
 			delete connectedDevices[key];
-			devices.sockets[key].disconnect();
+			
+			if (devices.sockets[key] != null){
+				devices.sockets[key].disconnect();
+			}
 		}
 	});
 	console.log("Connected devices : " + Object.keys(connectedDevices).length);
@@ -137,37 +140,54 @@ sendToMonitors = function(event, data){
 };
 
 sendStatsToMonitors = function(){
-	var time = new Date().getTime();
-	//TODO : manage standard deviation for sockets
-//	var stdDevTiltLR = standardDeviation(tiltLRs);
-//	console.log("stdDevTiltLR" + stdDevTiltLR);
-//	var stdDevTiltFB = standardDeviation(tiltFBs);
-//	console.log("stdDevTiltFB" + stdDevTiltFB);
-//	sendToMonitors('standardDeviation', {stdDevTiltLR: stdDevTiltLR, stdDevTiltFB: stdDevTiltFB, time: time});
+
+	var stdDev = standardDeviation();
+	stdDev["time"] = new Date().getTime();
+	sendToMonitors('standardDeviation', stdDev);
 	
-//	console.log('LR : ' + stdDevTiltLR + ' / FB : ' + stdDevTiltFB);
-//	sendOSC(stdDevTiltLR, stdDevTiltFB);
+	sendOSC(stdDev.stdDevTiltLR, stdDev.stdDevTiltFB);
 };
 
 
 /**
  * Statistics computation
  */
-standardDeviation = function(array){
-	var avg = average(array);
-	var sum = 0;
+standardDeviation = function(){
+
+	var keys = Object.keys(connectedDevices);
+	var stdDevTiltLR = 0;
+	var stdDevTiltFB = 0;
 	
-	for ( var int = 0; int < array.length; int++) {
-		sum += Math.pow((array[int] - avg), 2);
+	if (keys.length > 1)
+	{
+		var sumTiltLR = 0;
+		var sumTiltFB = 0;
+		
+		keys.forEach(function(key){
+			var device = connectedDevices[key];
+			sumTiltLR += device.tiltLR;
+			sumTiltFB += device.tiltFB;
+		});
+		
+		var avgTiltLR = sumTiltLR / keys.length;
+		var avgTiltFB = sumTiltFB / keys.length;
+		
+		sumTiltLR = 0;
+		sumTiltFB = 0;
+		
+		keys.forEach(function(key){
+			var device = connectedDevices[key];
+			sumTiltLR += Math.pow((device.tiltLR - avgTiltLR), 2);
+			sumTiltFB += Math.pow((device.tiltFB - avgTiltFB), 2);
+		});
+	
+//		stdDevTiltLR = Math.sqrt(sumTiltLR / keys.length);
+//		stdDevTiltFB = Math.sqrt(sumTiltFB / keys.length);
+		stdDevTiltLR = 1 - (Math.sqrt(sumTiltLR / keys.length) / 90);
+		stdDevTiltFB = 1 - (Math.sqrt(sumTiltFB / keys.length) / 90);
+
 	}
-	
-	stdDev = Math.sqrt(sum / array.length);
-	var dev = 1;
-	if (stdDev > 1) {
-		dev = 1 / stdDev;
-	}
-	
-	return dev;
+	return {stdDevTiltLR : stdDevTiltLR, stdDevTiltFB : stdDevTiltFB};
 };
 
 average = function(array){
