@@ -74,7 +74,7 @@ sendOSC = function(myValue1, myValue2) {
 		address : "/hamelin/deviation",
 		args : [ myValue1, myValue2 ]
 	});
-	return udp.send(buf, 0, buf.length, 8200, "192.168.5.119");
+	return udp.send(buf, 0, buf.length, 8200, "192.168.5.109");
 };
 
 /**
