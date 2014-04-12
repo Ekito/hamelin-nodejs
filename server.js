@@ -183,13 +183,27 @@ standardDeviation = function(){
 			sumTiltFB += Math.pow((device.tiltFB - avgTiltFB), 2);
 		});
 	
-//		stdDevTiltLR = Math.sqrt(sumTiltLR / keys.length);
-//		stdDevTiltFB = Math.sqrt(sumTiltFB / keys.length);
 		stdDevTiltLR = 1 - (Math.sqrt(sumTiltLR / keys.length) / 90);
 		stdDevTiltFB = 1 - (Math.sqrt(sumTiltFB / keys.length) / 90);
 
 	}
-	return {avgTiltLR : avgTiltLR, stdDevTiltLR : stdDevTiltLR, avgTiltFB : avgTiltFB, stdDevTiltFB : stdDevTiltFB};
+	return {avgTiltLR : rangeValue(avgTiltLR / 90, -1, 1),
+		stdDevTiltLR : rangeValue(stdDevTiltLR, 0, 1),
+		avgTiltFB : rangeValue(avgTiltFB / 90, -1, 1),
+		stdDevTiltFB : rangeValue(stdDevTiltFB, 0, 1)};
+};
+
+rangeValue = function(value, min, max){
+	var result = 0;
+	
+	if (value < min){
+		result = min;
+	}else if (value > max){
+		result = max;
+	}else{
+		result = value;
+	}
+	return result;
 };
 
 average = function(array){
