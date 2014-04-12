@@ -145,7 +145,7 @@ sendStatsToMonitors = function(){
 	stdDev["time"] = new Date().getTime();
 	sendToMonitors('standardDeviation', stdDev);
 	
-	sendOSC(stdDev.stdDevTiltLR, stdDev.stdDevTiltFB);
+	sendOSC(stdDev.stdDevTiltLR, stdDev.avgTiltLR);
 };
 
 
@@ -157,8 +157,10 @@ standardDeviation = function(){
 	var keys = Object.keys(connectedDevices);
 	var stdDevTiltLR = 0;
 	var stdDevTiltFB = 0;
+	var avgTiltLR = 0;
+	var avgTiltFB = 0;
 	
-	if (keys.length > 1)
+	if (keys.length > 0)
 	{
 		var sumTiltLR = 0;
 		var sumTiltFB = 0;
@@ -169,8 +171,8 @@ standardDeviation = function(){
 			sumTiltFB += device.tiltFB;
 		});
 		
-		var avgTiltLR = sumTiltLR / keys.length;
-		var avgTiltFB = sumTiltFB / keys.length;
+		avgTiltLR = sumTiltLR / keys.length;
+		avgTiltFB = sumTiltFB / keys.length;
 		
 		sumTiltLR = 0;
 		sumTiltFB = 0;
@@ -187,7 +189,7 @@ standardDeviation = function(){
 		stdDevTiltFB = 1 - (Math.sqrt(sumTiltFB / keys.length) / 90);
 
 	}
-	return {stdDevTiltLR : stdDevTiltLR, stdDevTiltFB : stdDevTiltFB};
+	return {avgTiltLR : avgTiltLR, stdDevTiltLR : stdDevTiltLR, avgTiltFB : avgTiltFB, stdDevTiltFB : stdDevTiltFB};
 };
 
 average = function(array){

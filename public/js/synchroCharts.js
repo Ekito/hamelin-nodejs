@@ -30,8 +30,10 @@
 
 		//Create default series on init
 		createSerie(lrChart, "Deviation");
+		createSerie(lrChart, "Average");
 		createSerie(fbChart, "Deviation");
-
+		createSerie(fbChart, "Average");
+		
 		resumeTime = new Date().getTime();
 
 		lrChart.render();
@@ -47,11 +49,11 @@
 				var timeInSeconds = (currentLength.getTime() / 1000)
 						+ resumeLength;
 
-				tiltLRValue = eventData.stdDevTiltLR;
-				tiltFBValue = eventData.stdDevTiltFB;
+				pushData(lrChart, 1, timeInSeconds, eventData.stdDevTiltLR);
+				pushData(lrChart, 2, timeInSeconds, eventData.avgTiltLR);
 
-				pushData(lrChart, 1, timeInSeconds, tiltLRValue);
-				pushData(fbChart, 1, timeInSeconds, tiltFBValue);
+				pushData(fbChart, 1, timeInSeconds, eventData.stdDevTiltFB);
+				pushData(fbChart, 2, timeInSeconds, eventData.avgTiltFB);
 
 		}
 	};
