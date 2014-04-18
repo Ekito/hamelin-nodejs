@@ -67,15 +67,21 @@
 				y : 0,
 			});
 
-			//For each datapoint, removes values older than 5s
 			for ( var i = 0; i < chart.options.data.length; i++) {
-				if (chart.options.data[i] != null
-						&& chart.options.data[i].dataPoints[0] != null
-						&& chart.options.data[i].dataPoints[0].x < time - 5) {
-					chart.options.data[i].dataPoints.shift();
+				if (chart.options.data[i] != null){
+					if (chart.options.data[i].dataPoints.length > 50){
+						var dataPointsLength = chart.options.data[i].dataPoints.length;
+						
+						chart.options.data[i].dataPoints.splice(0, dataPointsLength - 50);
+					}else if (chart.options.data[i].dataPoints[0] != null
+							//For each datapoint, removes values older than 5s
+							&& chart.options.data[i].dataPoints[0].x < time - 5) {
+						chart.options.data[i].dataPoints.shift();
+						onRemove(chart, i);
+					}
+					
 				}
-				onRemove(chart, i);
 			}
-
+			
 			chart.render();
 	};

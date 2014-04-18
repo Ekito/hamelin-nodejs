@@ -14,16 +14,13 @@ var udp = dgram.createSocket("udp4");
 /**
  * Init socket clients registries  
  */
-//list of currently connected clients (users)
-var clients = [ ];
+var connectedDevices = {};
+var indexes = [];
 
 //Device orientation data are split in arrays for easier calculation
-var tiltLRs = [ ];
-var tiltFBs = [ ];
-var times = [ ];
-
-//list of currently connected monitors
-var monitors = [ ];
+//var tiltLRs = [ ];
+//var tiltFBs = [ ];
+//var times = [ ];
 
 //statistics variable
 var statsFrequency = 100;
@@ -71,66 +68,39 @@ var io = SocketIO.listen(server);
 sendOSC = function(myValue1, myValue2) {
 	var buf;
 	buf = osc.toBuffer({
-		address : "/Fader",
+		address : "/hamelin/deviation",
 		args : [ myValue1, myValue2 ]
 	});
-	return udp.send(buf, 0, buf.length, 8200, "192.168.5.118");
+	return udp.send(buf, 0, buf.length, 8200, "192.168.5.109");
 };
 
 /**
  * Socket.io connection management
  */
-var monitor;
-
 io.set('log level', 1);
-io.sockets.on('connection', function(socket) {
 
-	var index = registerClient(socket);
-	var isMonitor = false;
-	
+var monitors = io.of('/monitors');
+
+var devices = io.of('/devices');
+devices.on('connection', function(socket) {
+
+	var index = indexes.push(socket.id);
 	
 	console.log(new Date() + "Connected on socket.io with ID: " + socket.id);
 
 	socket.on('getId', function(data) {
 		console.log(new Date() + "Send new id for client " + socket.id);
-		socket.emit('id', index + 1);
+		socket.emit('id', index);
 	});
 	
-	socket.on('registerMonitor', function(data) {
-		console.log(new Date() + "Receive register monitor: " + socket.id);
-		//Remove from the clients list and add it to the monitors
-		unregisterClient(index);
-		index = monitors.push(socket) - 1;
-		isMonitor = true;
-		
-	});
 	
-	socket.on('unregisterMonitor', function(data) {
-		console.log(new Date() + "Receive unregister monitor: " + socket.id);
-		//Remove from the monitors list
-		monitors.splice(index, 1);
-	});
-
 	socket.on('deviceOrientation', function(data) {
-//		console.log(new Date() + "Receive device orientation: " + socket.id);
-		
-		recordDeviceOrientation(index, data);
+		connectedDevices[socket.id] = socket;
+		socket.tiltLR = data.tiltLR;
+		socket.tiltFB = data.tiltFB;
+		socket.time = new Date().getTime();
 		
 		sendToMonitors('deviceOrientation', data);
-		
-		//Send OSC message to the server
-		//	sendOSC(data.tiltLR, data.tiltFB);
-		
-
-	});
-	
-	socket.on('disconnect', function(){
-		if (isMonitor) {
-			//Nothing to do the monitor is unregistered when leaving the page
-		}else {
-			console.log(new Date() + "Removing client at index " + index);
-			unregisterClient(index);
-		}
 		
 	});
 	
@@ -141,78 +111,87 @@ setInterval(function() {
 	sendStatsToMonitors();
 }, statsFrequency);
 
-//Refresh statistics
+//Manage connected devices
 setInterval(function() {
-	console.log("Connected clients : " + clients.length);
-	console.log("Connected monitors : " + monitors.length);
-	console.log("tiltLRs : " + tiltLRs.length);
-	console.log("tiltFBs : " + tiltFBs.length);
-	console.log("times : " + times.length);
-	
-}, 5000);
-
-registerClient = function(socket){
-	var index = clients.push(socket) - 1;
-	time = Math.round(new Date().getTime());
-	tiltLRs.push(0);
-	tiltFBs.push(0);
-	times.push(time);
-	return index;
-};
-
-unregisterClient = function(index){
-	clients.splice(index, 1);
-	tiltLRs.splice(index, 1);
-	tiltFBs.splice(index, 1);
-	times.splice(index, 1);
-	return index;
-};
+	var currentTime = new Date().getTime();
+	Object.keys(connectedDevices).forEach(function(key){
+		var socket = connectedDevices[key];
+		var elapsedTime = currentTime - socket.time;
+		
+		if (elapsedTime > 1000)
+		{
+			console.log("Remove socket :" + key + " from connected devices and disconnect.");
+			delete connectedDevices[key];
+			
+			if (devices.sockets[key] != null){
+				devices.sockets[key].disconnect();
+			}
+		}
+	});
+	console.log("Connected devices : " + Object.keys(connectedDevices).length);
+	console.log("Connected monitors : " + monitors.clients().length);
+}, 1000);
 
 /**
  * Monitoring functions
  */
 sendToMonitors = function(event, data){
-//	console.log("Send " + event + " to " + monitors.length + " monitor(s).");
-	for (var i = 0; i < monitors.length; i ++) { // broad cast on all monitors
-        if (monitors[i]) {
-        	monitors[i].emit(event, data);
-        }
-    }
+	monitors.emit(event, data);
 };
 
 sendStatsToMonitors = function(){
-	var time = new Date().getTime();
-	var stdDevTiltLR = standardDeviation(tiltLRs);
-//	console.log("stdDevTiltLR" + stdDevTiltLR);
-	var stdDevTiltFB = standardDeviation(tiltFBs);
-//	console.log("stdDevTiltFB" + stdDevTiltFB);
-	sendToMonitors('standardDeviation', {stdDevTiltLR: stdDevTiltLR, stdDevTiltFB: stdDevTiltFB, time: time});
+
+	var stdDev = standardDeviation();
+	stdDev["time"] = new Date().getTime();
+	sendToMonitors('standardDeviation', stdDev);
+	
+	sendOSC(stdDev.stdDevTiltLR, stdDev.avgTiltLR);
 };
 
-/**
- * DeviceOrientation management
- */
-recordDeviceOrientation = function(index, data){
-//	console.log("Record deviceOrientation : " + data);
-	tiltLRs[index] = data.tiltLR;
-	tiltFBs[index] = data.tiltFB;
-	times[index] = data.time;
-};
 
 /**
  * Statistics computation
  */
-standardDeviation = function(array){
-	var avg = average(array);
-	var sum = 0;
+standardDeviation = function(){
+
+	var keys = Object.keys(connectedDevices);
+	var stdDevTiltLR = 0;
+	var stdDevTiltFB = 0;
+	var avgTiltLR = 0;
+	var avgTiltFB = 0;
 	
-	for ( var int = 0; int < array.length; int++) {
-		sum += Math.pow((array[int] - avg), 2);
+	if (keys.length > 0)
+	{
+		var sumTiltLR = 0;
+		var sumTiltFB = 0;
+		
+		keys.forEach(function(key){
+			var device = connectedDevices[key];
+			sumTiltLR += device.tiltLR;
+			sumTiltFB += device.tiltFB;
+		});
+		
+		avgTiltLR = sumTiltLR / keys.length;
+		avgTiltFB = sumTiltFB / keys.length;
+		
+		sumTiltLR = 0;
+		sumTiltFB = 0;
+		
+		keys.forEach(function(key){
+			var device = connectedDevices[key];
+			sumTiltLR += Math.pow((device.tiltLR - avgTiltLR), 2);
+			sumTiltFB += Math.pow((device.tiltFB - avgTiltFB), 2);
+		});
+	
+	
+	if (value < min){
+		result = min;
+	}else if (value > max){
+		result = max;
+	}else{
+		result = value;
 	}
-	
-	stdDev = Math.sqrt(sum / array.length);
-	
-	return stdDev;
+	return result;
 };
 
 average = function(array){
