@@ -30,8 +30,8 @@
 
 		//Create default series on init
 		createSerie(lrChart, "Deviation");
-		createSerie(lrChart, "Average");
 		createSerie(fbChart, "Deviation");
+		createSerie(lrChart, "Average");
 		createSerie(fbChart, "Average");
 		
 		resumeTime = new Date().getTime();

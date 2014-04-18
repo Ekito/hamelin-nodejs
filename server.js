@@ -23,7 +23,7 @@ var indexes = [];
 //var times = [ ];
 
 //statistics variable
-var statsFrequency = 300;
+var statsFrequency = 100;
 
 /**
  * Init Web Application
@@ -183,18 +183,6 @@ standardDeviation = function(){
 			sumTiltFB += Math.pow((device.tiltFB - avgTiltFB), 2);
 		});
 	
-		stdDevTiltLR = 1 - (Math.sqrt(sumTiltLR / keys.length) / 90);
-		stdDevTiltFB = 1 - (Math.sqrt(sumTiltFB / keys.length) / 90);
-
-	}
-	return {avgTiltLR : rangeValue(avgTiltLR / 90, -1, 1),
-		stdDevTiltLR : rangeValue(stdDevTiltLR, 0, 1),
-		avgTiltFB : rangeValue(avgTiltFB / 90, -1, 1),
-		stdDevTiltFB : rangeValue(stdDevTiltFB, 0, 1)};
-};
-
-rangeValue = function(value, min, max){
-	var result = 0;
 	
 	if (value < min){
 		result = min;
