@@ -3,24 +3,16 @@
  */
 var express = require('express'),
 	routes = require('./routes'),
+	osc = require('./osc'),
 	http = require('http'),
 	path = require('path'),
 	SocketIO = require('socket.io');
-
-var osc = require('osc-min');
-var dgram = require('dgram');
-var udp = dgram.createSocket("udp4");
 
 /**
  * Init socket clients registries  
  */
 var connectedDevices = {};
 var indexes = [];
-
-//Device orientation data are split in arrays for easier calculation
-//var tiltLRs = [ ];
-//var tiltFBs = [ ];
-//var times = [ ];
 
 //statistics variable
 var statsFrequency = 300;
@@ -52,7 +44,7 @@ app.configure('development', function(){
 app.get('/', routes.index);
 app.get('/deviceCharts', routes.deviceCharts);
 app.get('/synchroCharts', routes.synchroCharts);
-app.get('/console', routes.console);
+app.get('/configuration', routes.configuration);
 
 var server = http.createServer(app);
 server.listen(app.get('port'), function(){
@@ -62,24 +54,45 @@ server.listen(app.get('port'), function(){
 var io = SocketIO.listen(server);
 
 /**
- * Send OSC message
- */
-
-sendOSC = function(myValue1, myValue2) {
-	var buf;
-	buf = osc.toBuffer({
-		address : "/hamelin/deviation",
-		args : [ myValue1, myValue2 ]
-	});
-	return udp.send(buf, 0, buf.length, 8200, "192.168.5.109");
-};
-
-/**
  * Socket.io connection management
  */
 io.set('log level', 1);
 
+console.log(osc);
+
 var monitors = io.of('/monitors');
+monitors.on('connection', function(socket){
+	
+	socket.on('osc:getParams', function(data) {
+		console.info("Receive OSC parameters request from " + socket.id);
+		console.info("Send serverIp : " + osc.serverIp + ", serverPort : " + osc.serverPort + ", rootAddress : " + osc.rootAddress);
+		socket.emit('osc:params', {
+			serverIp : osc.serverIp,
+			serverPort : osc.serverPort,
+			rootAddress : osc.rootAddress
+		});
+	});
+	
+	socket.on('osc:setParams', function(data) {
+		console.info("Receive new OSC parameters from " + socket.id);
+		osc.serverIp = data.serverIp;
+		osc.serverPort = data.serverPort;
+		osc.rootAddress = data.rootAddress;
+		
+		monitors.emit('osc:params', {
+			serverIp : osc.serverIp,
+			serverPort : osc.serverPort,
+			rootAddress : osc.rootAddress
+		});
+	});
+	
+	socket.on('osc:message', function(data) {
+		console.log("Send OSC message '" + data.message + "'");
+
+		osc.sendMessage(data.address, data.message);
+	});
+	
+});
 
 var devices = io.of('/devices');
 devices.on('connection', function(socket) {
@@ -128,8 +141,8 @@ setInterval(function() {
 			}
 		}
 	});
-	console.log("Connected devices : " + Object.keys(connectedDevices).length);
-	console.log("Connected monitors : " + monitors.clients().length);
+//	console.log("Connected devices : " + Object.keys(connectedDevices).length);
+//	console.log("Connected monitors : " + monitors.clients().length);
 }, 1000);
 
 /**
@@ -145,7 +158,7 @@ sendStatsToMonitors = function(){
 	stdDev["time"] = new Date().getTime();
 	sendToMonitors('standardDeviation', stdDev);
 	
-	sendOSC(stdDev.stdDevTiltLR, stdDev.avgTiltLR);
+//	sendOSC(stdDev.stdDevTiltLR, stdDev.avgTiltLR);
 };
 
 

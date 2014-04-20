@@ -7,6 +7,6 @@ exports.deviceCharts = function(req, res){
 exports.synchroCharts = function(req, res){
   res.render('synchroCharts', {title: 'Monitoring'});
 };
-exports.console = function(req, res){
-  res.render('console', {title: 'Console'});
+exports.configuration = function(req, res){
+  res.render('configuration', {title: 'Configuration'});
 };

@@ -5,7 +5,9 @@ var offsetTiltFB = 0;
 var offsetTiltLR = 0;
 var time = 0;
 var id = -1;
+
 var eventDetectionStatus = document.getElementById("doEvent");
+
 
 var socket = io.connect(document.location.host + '/devices');
 
@@ -157,3 +159,10 @@ setInterval(function() {
         'backgroundColor', "rgb(" + Math.abs(tiltFB * 2) + "," + Math.abs(tiltLR * 2) + ", " + seconds * 4 + ")"
       );
 }, sampleFrequency);
+
+function sendOSCMessage(message) {
+	
+	socket.emit('osc:message', {
+		message : message
+	});
+}
