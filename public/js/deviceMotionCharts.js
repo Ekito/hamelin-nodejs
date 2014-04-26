@@ -4,8 +4,9 @@
 	var timelineFrequency = 100;
 	var resumeTime = 0;
 	var pauseTime = 0;
-	var lrChart;
-	var fbChart;
+	var xChart;
+	var yChart;
+	var zChart;
 	var devices = [];
 	
 	var socket = io.connect(document.location.host + '/monitors');
@@ -21,13 +22,15 @@
 		var playSpan = document.getElementById('play');
 		playSpan.style.display = 'none';
 
-		lrChart = createChart("lrChart", "Left-Right", "Orientation", "°");
-		fbChart = createChart("fbChart", "Front-Back", "Orientation", "°");
-
+		xChart = createChart("xChart", "X", "Motion", "");
+		yChart = createChart("yChart", "Y", "Motion", "");
+		zChart = createChart("zChart", "Z", "Motion", "");
+		
 		resumeTime = new Date().getTime();
 
-		lrChart.render();
-		fbChart.render();
+		xChart.render();
+		yChart.render();
+		zChart.render();
 
 	});
 
@@ -55,14 +58,16 @@
 				if (device == null)
 				{
 					var deviceName = "Smartphone " + id;
-					index = createSerie(lrChart, deviceName);
-					index = createSerie(fbChart, deviceName);
+					index = createSerie(xChart, deviceName);
+					index = createSerie(yChart, deviceName);
+					index = createSerie(zChart, deviceName);
 					
 					device = {id: id, index:index, name: deviceName };
 					devices.push(device);
 				}
-				pushData(lrChart, device.index, timeInSeconds, tiltLRValue);
-				pushData(fbChart, device.index, timeInSeconds, tiltFBValue);
+				pushData(xChart, device.index, timeInSeconds, tiltLRValue);
+				pushData(yChart, device.index, timeInSeconds, tiltFBValue);
+				pushData(zChart, device.index, timeInSeconds, tiltFBValue);
 
 			}
 		}
@@ -77,8 +82,9 @@
 					var timeInSeconds = (currentLength / 1000)
 							+ resumeLength;
 
-					refreshChart(lrChart, timeInSeconds, purgeInactiveDevice);
-					refreshChart(fbChart, timeInSeconds, purgeInactiveDevice);
+					refreshChart(xChart, timeInSeconds, purgeInactiveDevice);
+					refreshChart(yChart, timeInSeconds, purgeInactiveDevice);
+					refreshChart(zChart, timeInSeconds, purgeInactiveDevice);
 				}
 			}, timelineFrequency
 	);

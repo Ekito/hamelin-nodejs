@@ -5,19 +5,16 @@ block content
 		div.row
 			div.col-md-5
 			div.col-md-1
-
-		div.row
-			div.col-md-1
 				span#play
 					img(src="icons/media-playback-start.png" height="60" width="60" alt="Play" style="cursor:pointer;" onclick="resume();")
 				span#pause
 					img(src="icons/media-playback-pause.png" height="60" width="60" alt="Pause" style="cursor:pointer;" onclick="pause();")
+		div.row
 			div.col-md-5
 				div#lrChart.chart
 			div.col-md-5
 				div#fbChart.chart
-			div.col-md-1
 			
 		script(src='js/libs/canvasjs.min.js')
 		script(src='js/charts.js')
-		script(src='js/deviceOrientationCharts.js')
+		script(src='js/'+chartType+'Charts.js')

@@ -25,8 +25,8 @@
 		var playSpan = document.getElementById('play');
 		playSpan.style.display = 'none';
 
-		lrChart = createChart("lrChart", "Left-Right", "Deviation");
-		fbChart = createChart("fbChart", "Front-Back", "Deviation");
+		lrChart = createChart("lrChart", "Left-Right", "Deviation", "");
+		fbChart = createChart("fbChart", "Front-Back", "Deviation", "");
 
 		//Create default series on init
 		createSerie(lrChart, "Deviation");

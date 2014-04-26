@@ -1,4 +1,4 @@
-	var createChart = function (chartName, title, axisYTitle) {
+	var createChart = function (chartName, title, axisYTitle, axisYUnit) {
 		var chart = new CanvasJS.Chart(chartName, {
 			zoomEnabled : true,
 			title : {
@@ -24,7 +24,7 @@
 			axisY : {
 				title : axisYTitle,
 				margin : 20,
-				suffix : "°",
+				suffix : axisYUnit,
 				titleFontSize : 14,
 			},
 			data : [ {

@@ -1,6 +1,10 @@
 var sampleFrequency = 100;
 var tiltLR = 0;
 var tiltFB = 0;
+var x = 0;
+var y = 0;
+var z = 0;
+
 var offsetTiltFB = 0;
 var offsetTiltLR = 0;
 var time = 0;
@@ -119,6 +123,10 @@ function deviceMotionListener(eventData) {
 	// Grab the acceleration including gravity from the results
 	var acceleration = eventData.accelerationIncludingGravity;
 	
+	x = acceleration.x;
+	y = acceleration.y;
+	z = acceleration.z;
+	
 	if (xElem != null)
 	{
 		xElem.innerHTML = acceleration.x;
@@ -139,6 +147,23 @@ function deviceOrientationHandler(tiltLR, tiltFB) {
 			time : time,
 			tiltLR : tiltLR + offsetTiltLR,
 			tiltFB : tiltFB + offsetTiltFB
+		});
+		
+		
+	}
+}
+
+function deviceOrientationHandler(tiltLR, tiltFB) {
+
+	time = Math.round(new Date().getTime());
+
+	if (id != -1) {
+		socket.emit('deviceOrientation', {
+			id : id,
+			time : time,
+			x : x,
+			y : y,
+			z : z
 		});
 		
 		
@@ -168,6 +193,7 @@ setInterval(function() {
 	}
 	
 	deviceOrientationHandler(tiltLR, tiltFB);
+	deviceMotionHandler(x, y, z);
 	
 	var seconds = new Date().getSeconds();
 

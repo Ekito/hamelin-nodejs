@@ -43,7 +43,8 @@ app.configure('development', function(){
 
 app.get('/', routes.index);
 app.get('/deviceOrientationCharts', routes.deviceOrientationCharts);
-app.get('/synchroCharts', routes.synchroCharts);
+app.get('/deviceOrientationSynchroCharts', routes.deviceOrientationSynchroCharts);
+app.get('/deviceMotionCharts', routes.deviceMotionCharts);
 app.get('/configuration', routes.configuration);
 
 var server = http.createServer(app);
