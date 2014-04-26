@@ -42,7 +42,7 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-app.get('/deviceCharts', routes.deviceCharts);
+app.get('/deviceOrientationCharts', routes.deviceOrientationCharts);
 app.get('/synchroCharts', routes.synchroCharts);
 app.get('/configuration', routes.configuration);
 
