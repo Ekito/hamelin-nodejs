@@ -118,6 +118,18 @@ devices.on('connection', function(socket) {
 		
 	});
 	
+	socket.on('deviceMotion', function(data) {
+		connectedDevices[socket.id] = socket;
+		socket.x = data.x;
+		socket.y = data.y;
+		socket.z = data.z;
+		socket.motionSendTime = data.time;
+		socket.motionReceiveTime = new Date().getTime();
+		
+		sendToMonitors('deviceMotion', data);
+		
+	});
+	
 });
 
 //Refresh statistics

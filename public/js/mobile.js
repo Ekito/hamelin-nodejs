@@ -153,12 +153,12 @@ function deviceOrientationHandler(tiltLR, tiltFB) {
 	}
 }
 
-function deviceOrientationHandler(tiltLR, tiltFB) {
+function deviceMotionHandler(tiltLR, tiltFB) {
 
 	time = Math.round(new Date().getTime());
 
 	if (id != -1) {
-		socket.emit('deviceOrientation', {
+		socket.emit('deviceMotion', {
 			id : id,
 			time : time,
 			x : x,

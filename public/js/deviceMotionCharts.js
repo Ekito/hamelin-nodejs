@@ -15,7 +15,7 @@
 		console.log("Connect to socket.io");
 	});
 	
-	socket.on('deviceOrientation', deviceOrientationListener);
+	socket.on('deviceMotion', deviceMotionListener);
 	
 	$( function() {
 
@@ -34,7 +34,7 @@
 
 	});
 
-	function deviceOrientationListener(eventData) {
+	function deviceMotionListener(eventData) {
 //		console.log("deviceOrientation for mobile : " + eventData.id);
 		if (isResume) {
 			var id = eventData.id;
@@ -44,9 +44,6 @@
 				currentLength.setTime(new Date().getTime() - resumeTime);
 				var timeInSeconds = (currentLength.getTime() / 1000)
 						+ resumeLength;
-
-				tiltLRValue = eventData.tiltLR;
-				tiltFBValue = eventData.tiltFB;
 
 				var device = null; 
 				devices.map(function(element){
@@ -65,9 +62,9 @@
 					device = {id: id, index:index, name: deviceName };
 					devices.push(device);
 				}
-				pushData(xChart, device.index, timeInSeconds, tiltLRValue);
-				pushData(yChart, device.index, timeInSeconds, tiltFBValue);
-				pushData(zChart, device.index, timeInSeconds, tiltFBValue);
+				pushData(xChart, device.index, timeInSeconds, eventData.x);
+				pushData(yChart, device.index, timeInSeconds, eventData.y);
+				pushData(zChart, device.index, timeInSeconds, eventData.z);
 
 			}
 		}
