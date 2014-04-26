@@ -6,8 +6,11 @@ var offsetTiltLR = 0;
 var time = 0;
 var id = -1;
 
-var eventDetectionStatus = document.getElementById("doEvent");
-
+var deviceOrientationStatus = document.getElementById("doEvent");
+var deviceMotionStatus = document.getElementById("dmEvent");
+var xElem = document.getElementById("x");
+var yElem = document.getElementById("y");
+var zElem = document.getElementById("z");
 
 var socket = io.connect(document.location.host + '/devices');
 
@@ -26,8 +29,8 @@ socket.on('id', function(data) {
 if (window.DeviceOrientationEvent) {
 	
 	
-	if (eventDetectionStatus != null) {
-		eventDetectionStatus.innerHTML = "DeviceOrientation";
+	if (deviceOrientationStatus != null) {
+		deviceOrientationStatus.innerHTML = "DeviceOrientation";
 	}
 	// Listen for the deviceorientation event and handle the raw data
 	window.addEventListener('deviceorientation',
@@ -35,14 +38,20 @@ if (window.DeviceOrientationEvent) {
 
 } else if (window.OrientationEvent) {
 
-	if (eventDetectionStatus != null) {
-	eventDetectionStatus.innerHTML = "MozOrientation";
+	if (deviceOrientationStatus != null) {
+	deviceOrientationStatus.innerHTML = "MozOrientation";
 	}
 	window.addEventListener('MozOrientation', mozOrientationListener,
 			false);
 
-} else if (eventDetectionStatus != null) {
-		eventDetectionStatus.innerHTML = "Not supported on your device or browser.";
+} else if (deviceOrientationStatus != null) {
+		deviceOrientationStatus.innerHTML = "Not supported on your device or browser.";
+}
+
+if (window.DeviceMotionEvent) {
+	window.addEventListener('devicemotion', deviceMotionListener, false);
+} else {
+	deviceMotionStatus.innerHTML = "Not supported.";
 }
 
 function deviceOrientationListener(eventData) {
@@ -53,13 +62,13 @@ function deviceOrientationListener(eventData) {
 	if (eventData.gamma == null && eventData.beta == null) {
 		//deviceOrientation is not managed, deviceorientation listener is called only one time
 		if (window.DeviceMotionEvent) {
-			if (eventDetectionStatus != null) {
-				eventDetectionStatus.innerHTML = "DeviceMotion";
+			if (deviceOrientationStatus != null) {
+				deviceOrientationStatus.innerHTML = "DeviceMotion";
 			}
 			window.addEventListener('devicemotion',
-					deviceMotionListener, false);
-		} else if (eventDetectionStatus != null) {
-			eventDetectionStatus.innerHTML = "Not supported on your device or browser."
+					deviceMotionListenerForOrientation, false);
+		} else if (deviceOrientationStatus != null) {
+			deviceOrientationStatus.innerHTML = "Not supported on your device or browser."
 		}
 
 	} else {
@@ -83,35 +92,42 @@ function mozOrientationListener(eventData) {
 
 }
 
-function deviceMotionListener(eventData) {
+function deviceMotionListenerForOrientation(eventData) {
 	// Grab the acceleration including gravity from the results
-	var acceleration = eventData.accelerationIncludingGravity;
+	var accelerationIncludingGravity = eventData.accelerationIncludingGravity;
 
 	// Z is the acceleration in the Z axis, and if the device is facing up or down
 	var facingUp = -1;
-	if (acceleration.z > 0) {
+	if (accelerationIncludingGravity.z > 0) {
 		facingUp = +1;
 	}
 
-	var Xelem = document.getElementById("X");
-	var Yelem = document.getElementById("Y");
-	var Zelem = document.getElementById("Z");
-	
-	if (Xelem != null)
-	{
-		Xelem.innerHTML = acceleration.x;
-		Yelem.innerHTML = acceleration.y;
-		Zelem.innerHTML = acceleration.z;
-	}
 	// Convert the value from acceleration to degrees acceleration.x|y is the 
 	// acceleration according to gravity, we'll assume we're on Earth and divide 
 	// by 9.81 (earth gravity) to get a percentage value, and then multiply that 
 	// by 90 to convert to degrees.                                
-	tiltLR = Math.round(((acceleration.x) / 9.81) * -90);
-	tiltFB = Math.round(((acceleration.y) / 9.81) * 90
+	tiltLR = Math.round(((accelerationIncludingGravity.x) / 9.81) * -90);
+	tiltFB = Math.round(((accelerationIncludingGravity.y) / 9.81) * 90
 			* facingUp);
 
 }
+
+function deviceMotionListener(eventData) {
+	
+	deviceMotionStatus.innerHTML = "DeviceMotion";
+	//Acceleration and rotation will not be supported on all browsers
+	// Grab the acceleration including gravity from the results
+	var acceleration = eventData.accelerationIncludingGravity;
+	
+	if (xElem != null)
+	{
+		xElem.innerHTML = acceleration.x;
+		yElem.innerHTML = acceleration.y;
+		zElem.innerHTML = acceleration.z;
+	}
+	
+}
+
 
 function deviceOrientationHandler(tiltLR, tiltFB) {
 

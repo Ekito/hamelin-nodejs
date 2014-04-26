@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Hamelin</title>
+<title>Hamelin device tracker</title>
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <style>
@@ -40,17 +40,26 @@
 </head>
 
 <body>
-	<div class="box" id="gyro">
-		<h1>Hamelin gyro tracker</h1>
+	<div class="box" id="device">
+		<h3>Information de configuration</h1>
 		<table>
 			<tr>
 				<td>Identifiant :</td>
 				<td id="idField"></td>
 			</tr>
 			<tr>
-				<td>Evènement supporté</td>
+				<td>Support orientation</td>
 				<td id="doEvent"></td>
 			</tr>
+			<tr>
+				<td>Support accélération</td>
+				<td id="dmEvent"></td>
+			</tr>
+		</table>
+	</div>
+	<div class="box" id="orientation">
+		<h3>Données Orientation</h3>
+		<table>
 			<tr>
 				<td>Gauche / Droite</td>
 				<td id="doTiltLR"></td>
@@ -59,24 +68,30 @@
 				<td>Avant / Arrière</td>
 				<td id="doTiltFB"></td>
 			</tr>
+		</table>
+	</div>
+	<div class="box" id="motion">
+		<h3>Données Accélération</h3>
+		<table>
 			<tr>
-				Accélération :
+				<td>Accélération avec gravité :</td>
+				<td></td>
 			</tr>
 			<tr>
 				<td>X</td>
-				<td id="X"></td>
+				<td id="x"></td>
 			</tr>
 			<tr>
 				<td>Y</td>
-				<td id="Y"></td>
+				<td id="y"></td>
 			</tr>
 			<tr>
 				<td>Z</td>
-				<td id="Z"></td>
+				<td id="z"></td>
 			</tr>
 		</table>
 	</div>
-
+	
 	<script type="text/javascript" src="/js/libs/jquery-1.11.0.min.js"></script>
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="/js/mobile.js"></script>
