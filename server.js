@@ -88,7 +88,7 @@ monitors.on('connection', function(socket){
 	});
 	
 	socket.on('osc:message', function(data) {
-		console.log("Send OSC message '" + data.message + "'");
+		console.log("Device send OSC message '" + data.message + "' on address '" + data.address + "'");
 
 		osc.sendMessage(data.address, data.message);
 	});
@@ -128,6 +128,12 @@ devices.on('connection', function(socket) {
 		
 		sendToMonitors('deviceMotion', data);
 		
+	});
+	
+	socket.on('osc:message', function(data) {
+		console.log("Device send OSC message '" + data.message + "' on address '" + data.address + "'");
+
+		osc.sendMessage(data.address, data.message);
 	});
 	
 });

@@ -5,16 +5,28 @@ var x = 0;
 var y = 0;
 var z = 0;
 
-var offsetTiltFB = 0;
-var offsetTiltLR = 0;
+var oldx = 0;
+var oldy = 0;
+var oldz = 0;
+var oldtime = 0;
+
 var time = 0;
 var id = -1;
 
+var xratioThreshold = Math.pow(10, -11);
+//Variables for display :
+
 var deviceOrientationStatus = document.getElementById("doEvent");
 var deviceMotionStatus = document.getElementById("dmEvent");
+
+var tiltLRElem = document.getElementById("tiltLR");
+var tiltFBElem = document.getElementById("tiltFB");
+
 var xElem = document.getElementById("x");
 var yElem = document.getElementById("y");
 var zElem = document.getElementById("z");
+
+var realTime = true;
 
 var socket = io.connect(document.location.host + '/devices');
 
@@ -82,6 +94,10 @@ function deviceOrientationListener(eventData) {
 		// beta is the front-to-back tilt in degrees, where front is positive
 		tiltFB = Math.round(eventData.beta);
 
+		if (realTime)
+		{
+			deviceOrientationHandler(tiltLR, tiltFB);
+		}
 	}
 }
 
@@ -94,6 +110,10 @@ function mozOrientationListener(eventData) {
 	// results in a positive value. 
 	tiltFB = Math.round(eventData.y * -90);
 
+	if (realTime)
+	{
+		deviceOrientationHandler(tiltLR, tiltFB);
+	}
 }
 
 function deviceMotionListenerForOrientation(eventData) {
@@ -114,6 +134,10 @@ function deviceMotionListenerForOrientation(eventData) {
 	tiltFB = Math.round(((accelerationIncludingGravity.y) / 9.81) * 90
 			* facingUp);
 
+	if (realTime)
+	{
+		deviceOrientationHandler(tiltLR, tiltFB);
+	}
 }
 
 function deviceMotionListener(eventData) {
@@ -127,84 +151,97 @@ function deviceMotionListener(eventData) {
 	y = acceleration.y;
 	z = acceleration.z;
 	
-	if (xElem != null)
+	if (realTime)
 	{
-		xElem.innerHTML = acceleration.x;
-		yElem.innerHTML = acceleration.y;
-		zElem.innerHTML = acceleration.z;
+	deviceMotionHandler(x, y, z);
 	}
-	
 }
 
 
 function deviceOrientationHandler(tiltLR, tiltFB) {
 
+	//Display on mobile
+	if (tiltLRElem != null) {
+		tiltLRElem.innerHTML = tiltLR;
+		tiltFBElem.innerHTML = tiltFB;
+	}
+
 	time = Math.round(new Date().getTime());
 
 	if (id != -1) {
-		socket.emit('deviceOrientation', {
-			id : id,
-			time : time,
-			tiltLR : tiltLR + offsetTiltLR,
-			tiltFB : tiltFB + offsetTiltFB
-		});
+//		socket.emit('deviceOrientation', {
+//			id : id,
+//			time : time,
+//			tiltLR : tiltLR,
+//			tiltFB : tiltFB
+//		});
 		
 		
 	}
 }
 
-function deviceMotionHandler(tiltLR, tiltFB) {
+function deviceMotionHandler(x, y, z) {
 
+	//Display on mobile
+	if (xElem != null)
+	{
+		xElem.innerHTML = x;
+		yElem.innerHTML = y;
+		zElem.innerHTML = z;
+	}
+	
+	//Send to server
 	time = Math.round(new Date().getTime());
 
+	
 	if (id != -1) {
-		socket.emit('deviceMotion', {
-			id : id,
-			time : time,
-			x : x,
-			y : y,
-			z : z
-		});
+//		socket.emit('deviceMotion', {
+//			id : id,
+//			time : time,
+//			x : x,
+//			y : y,
+//			z : z
+//		});
 		
+		xrange = x - oldx;
+		yrange = y - oldy;
+		timerange = time - oldtime;
 		
+		xratio = xrange/time;
+		
+		if (x > 15) {
+			if (xratio > xratioThreshold)
+			{
+				sendOSCMessage("/meneur", 1);
+			}
+//			sendOSCMessage(xratio);
+		}
 	}
-}
-
-function calibrate() {
-	offsetTiltLR = -tiltLR;
-	offsetTiltFB = -tiltFB;
-}
-
-function FormatNumberLength(num, length) {
-    var r = "" + num;
-    while (r.length < length) {
-        r = "0" + r;
-    }
-    return r;
+	oldx = x;
+	oldy = y;
+	oldz = z;
+	oldtime = time;
 }
 
 //Displaying and sending data to the websocket is rated in order to avoid client/server overload
-setInterval(function() {
-	var tiltLRElem = document.getElementById("doTiltLR");
-	
-	if (tiltLRElem != null) {
-		tiltLRElem.innerHTML = tiltLR + offsetTiltLR;
-		document.getElementById("doTiltFB").innerHTML = tiltFB + offsetTiltFB;
-	}
-	
-	deviceOrientationHandler(tiltLR, tiltFB);
-	deviceMotionHandler(x, y, z);
-	
-	var seconds = new Date().getSeconds();
+if (!realTime){
+	setInterval(function() {
+		
+		deviceOrientationHandler(tiltLR, tiltFB);
+		deviceMotionHandler(x, y, z);
 
-	$( "#bg" ).css(
-        'backgroundColor', "rgb(" + Math.abs(tiltFB * 2) + "," + Math.abs(tiltLR * 2) + ", " + seconds * 4 + ")"
-      );
-}, sampleFrequency);
+		var seconds = new Date().getSeconds();
 
-function sendOSCMessage(message) {
+		$( "#bg" ).css(
+				'backgroundColor', "rgb(" + Math.abs(tiltFB * 2) + "," + Math.abs(tiltLR * 2) + ", " + seconds * 4 + ")"
+		);
+	}, sampleFrequency);
+}
+
+function sendOSCMessage(address, message) {
 	
 	socket.emit('osc:message', {
+		address : address,
 		message : message
 	});
 }
