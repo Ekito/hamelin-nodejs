@@ -5,9 +5,15 @@ var x = 0;
 var y = 0;
 var z = 0;
 
+var oldx = 0;
+var oldy = 0;
+var oldz = 0;
+var oldtime = 0;
+
 var time = 0;
 var id = -1;
 
+var xratioThreshold = Math.pow(10, -11);
 //Variables for display :
 
 var deviceOrientationStatus = document.getElementById("doEvent");
@@ -163,12 +169,12 @@ function deviceOrientationHandler(tiltLR, tiltFB) {
 	time = Math.round(new Date().getTime());
 
 	if (id != -1) {
-		socket.emit('deviceOrientation', {
-			id : id,
-			time : time,
-			tiltLR : tiltLR,
-			tiltFB : tiltFB
-		});
+//		socket.emit('deviceOrientation', {
+//			id : id,
+//			time : time,
+//			tiltLR : tiltLR,
+//			tiltFB : tiltFB
+//		});
 		
 		
 	}
@@ -187,17 +193,34 @@ function deviceMotionHandler(x, y, z) {
 	//Send to server
 	time = Math.round(new Date().getTime());
 
+	
 	if (id != -1) {
-		socket.emit('deviceMotion', {
-			id : id,
-			time : time,
-			x : x,
-			y : y,
-			z : z
-		});
+//		socket.emit('deviceMotion', {
+//			id : id,
+//			time : time,
+//			x : x,
+//			y : y,
+//			z : z
+//		});
 		
+		xrange = x - oldx;
+		yrange = y - oldy;
+		timerange = time - oldtime;
 		
+		xratio = xrange/time;
+		
+		if (x > 15) {
+			if (xratio > xratioThreshold)
+			{
+				sendOSCMessage("/meneur", 1);
+			}
+//			sendOSCMessage(xratio);
+		}
 	}
+	oldx = x;
+	oldy = y;
+	oldz = z;
+	oldtime = time;
 }
 
 //Displaying and sending data to the websocket is rated in order to avoid client/server overload
@@ -215,9 +238,10 @@ if (!realTime){
 	}, sampleFrequency);
 }
 
-function sendOSCMessage(message) {
+function sendOSCMessage(address, message) {
 	
 	socket.emit('osc:message', {
+		address : address,
 		message : message
 	});
 }
