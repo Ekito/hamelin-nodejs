@@ -9,12 +9,12 @@
   },
   "main": "server.js",
   "dependencies": {
-    "connect": "*",
     "express": "*",
     "jade": "*",
     "stylus": "*",
     "osc-min": "*",
-    "socket.io": "*"
+    "socket.io": "*",
+    "winston": "*"
   },
   "devDependencies": {},
   "optionalDependencies": {},

@@ -1,0 +1,30 @@
+doctype html
+html
+	head
+		block head
+			block title
+				title Hamelin
+			block meta
+				meta(name='description', content='')
+				meta(name='keywords', content='')
+				meta(name='viewport', content='width=device-width, initial-scale=1')
+			link(rel='stylesheet', href='/css/bootstrap.min.css')
+			script(src='js/libs/jquery-1.11.0.min.js')
+			script(src='js/libs/bootstrap.min.js')
+			script(src='socket.io/socket.io.js')
+			
+	body
+		div.container
+			div.jumbotron
+				h1 Hamelin
+				h4 Une expérience musicale collective temps réel...
+				p
+					a(href="http://www.les-siestes-electroniques.com/Projet-Hamelin?lang=fr" class="btn btn-primary btn-lg" role="button")
+						small En savoir plus »
+				small
+					|Vous êtes actuellement connecté à la plateforme de démo.
+				hr(style='margin: 30px 0 10px 0;border-top: 1px solid #BDBDBD')
+				small.text-danger
+					|Pour accéder au live, veuillez vous connecter au réseau Wifi Hamelin et redémarrer l'application.
+				
+		include footer
