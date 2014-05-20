@@ -2,7 +2,7 @@
  * Init all modules and servers
  */
 var express = require('express'),
-	routes = require('./routes'),
+	routes = require('./config/routes'),
 	osc = require('./osc'),
 	http = require('http'),
 	path = require('path'),
@@ -35,25 +35,11 @@ app.use(require('stylus').middleware(__dirname + '/public'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 /**
- * Router initilization
+ * Routes initilization
  */
-logger.info('Router initialization...');
-var router = express.Router();
+logger.info('Routes initialization...');
+app.use('/', routes);
 
-app.use('/', router);
-
-//middleware to use for all requests
-//router.use(function(req, res, next) {
-//	// do logging
-//	logger.info('Something is happening.');
-//	next(); // make sure we go to the next routes and don't stop here
-//});
-
-router.get('/', routes.index);
-router.get('/deviceOrientationCharts', routes.deviceOrientationCharts);
-router.get('/deviceOrientationSynchroCharts', routes.deviceOrientationSynchroCharts);
-router.get('/deviceMotionCharts', routes.deviceMotionCharts);
-router.get('/configuration', routes.configuration);
 
 var server = http.createServer(app);
 server.listen(app.get('port'), function(){
