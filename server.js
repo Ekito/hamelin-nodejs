@@ -6,7 +6,10 @@ var express = require('express'),
 	osc = require('./osc'),
 	http = require('http'),
 	path = require('path'),
-	SocketIO = require('socket.io');
+	SocketIO = require('socket.io'),
+	logger = require('./log');
+
+logger.info("Logging initialized !");
 
 /**
  * Init socket clients registries  
@@ -20,36 +23,41 @@ var statsFrequency = 300;
 /**
  * Init Web Application
  */
+var env = process.env.NODE_ENV || 'development';
 var serverPort = process.env.PORT || 8080;
 var app = express();
 
-app.configure(function(){
-  app.set('port', serverPort);
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
-  app.use(express.favicon());
-  app.use(express.logger('dev'));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(app.router);
-  app.use(require('stylus').middleware(__dirname + '/public'));
-  app.use(express.static(path.join(__dirname, 'public')));
-});
 
-app.configure('development', function(){
-  app.use(express.errorHandler());
-    app.locals.pretty = true;
-});
+app.set('port', serverPort);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'jade');
+app.use(require('stylus').middleware(__dirname + '/public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', routes.index);
-app.get('/deviceOrientationCharts', routes.deviceOrientationCharts);
-app.get('/deviceOrientationSynchroCharts', routes.deviceOrientationSynchroCharts);
-app.get('/deviceMotionCharts', routes.deviceMotionCharts);
-app.get('/configuration', routes.configuration);
+/**
+ * Router initilization
+ */
+logger.info('Router initialization...');
+var router = express.Router();
+
+app.use('/', router);
+
+//middleware to use for all requests
+//router.use(function(req, res, next) {
+//	// do logging
+//	logger.info('Something is happening.');
+//	next(); // make sure we go to the next routes and don't stop here
+//});
+
+router.get('/', routes.index);
+router.get('/deviceOrientationCharts', routes.deviceOrientationCharts);
+router.get('/deviceOrientationSynchroCharts', routes.deviceOrientationSynchroCharts);
+router.get('/deviceMotionCharts', routes.deviceMotionCharts);
+router.get('/configuration', routes.configuration);
 
 var server = http.createServer(app);
 server.listen(app.get('port'), function(){
-	console.log((new Date()) + " Server is listening on port " + serverPort);
+	logger.info((new Date()) + " Server is listening on port " + serverPort);
 });
 
 var io = SocketIO.listen(server);
@@ -57,7 +65,7 @@ var io = SocketIO.listen(server);
 /**
  * Socket.io connection management
  */
-io.set('log level', 1);
+//io.set('log level', 1);
 
 console.log(osc);
 
@@ -68,9 +76,9 @@ monitors.on('connection', function(socket){
 		console.info("Receive OSC parameters request from " + socket.id);
 		console.info("Send serverIp : " + osc.serverIp + ", serverPort : " + osc.serverPort + ", rootAddress : " + osc.rootAddress);
 		socket.emit('osc:params', {
-			serverIp : osc.serverIp,
-			serverPort : osc.serverPort,
-			rootAddress : osc.rootAddress
+			'serverIp' : osc.serverIp,
+			'serverPort' : osc.serverPort,
+			'rootAddress' : osc.rootAddress
 		});
 	});
 	
@@ -81,9 +89,9 @@ monitors.on('connection', function(socket){
 		osc.rootAddress = data.rootAddress;
 		
 		monitors.emit('osc:params', {
-			serverIp : osc.serverIp,
-			serverPort : osc.serverPort,
-			rootAddress : osc.rootAddress
+			'serverIp' : osc.serverIp,
+			'serverPort' : osc.serverPort,
+			'rootAddress' : osc.rootAddress
 		});
 	});
 	
