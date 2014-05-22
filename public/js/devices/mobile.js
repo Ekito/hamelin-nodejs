@@ -169,12 +169,12 @@ function deviceOrientationHandler(tiltLR, tiltFB) {
 	time = Math.round(new Date().getTime());
 
 	if (id != -1) {
-//		socket.emit('deviceOrientation', {
-//			id : id,
-//			time : time,
-//			tiltLR : tiltLR,
-//			tiltFB : tiltFB
-//		});
+		socket.emit('deviceOrientation', {
+			id : id,
+			time : time,
+			tiltLR : tiltLR,
+			tiltFB : tiltFB
+		});
 		
 		
 	}
@@ -195,13 +195,13 @@ function deviceMotionHandler(x, y, z) {
 
 	
 	if (id != -1) {
-//		socket.emit('deviceMotion', {
-//			id : id,
-//			time : time,
-//			x : x,
-//			y : y,
-//			z : z
-//		});
+		socket.emit('deviceMotion', {
+			id : id,
+			time : time,
+			x : x,
+			y : y,
+			z : z
+		});
 		
 		xrange = x - oldx;
 		yrange = y - oldy;

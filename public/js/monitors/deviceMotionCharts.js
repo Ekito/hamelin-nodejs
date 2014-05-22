@@ -9,7 +9,7 @@
 	var zChart;
 	var devices = [];
 	
-	var socket = io.connect(document.location.host + '/monitors');
+	var socket = io.connect(document.location.host + '/monitors', {'sync disconnect on unload' : true});
 	
 	socket.on('connect', function () {
 		console.log("Connect to socket.io");

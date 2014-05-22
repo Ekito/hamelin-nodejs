@@ -7,7 +7,7 @@
 	var lrChart;
 	var fbChart;
 
-	var socket = io.connect(document.location.host + '/monitors');
+	var socket = io.connect(document.location.host + '/monitors', {'sync disconnect on unload' : true});
 	
 	window.onbeforeunload = function (e) {
 		socket.emit('unregisterMonitor');
