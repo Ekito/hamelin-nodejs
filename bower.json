@@ -1,0 +1,27 @@
+{
+  "name": "hamelin-nodejs",
+  "version": "0.0.1",
+  "homepage": "https://github.com/Ekito/hamelin-nodejs",
+  "authors": [
+    "jboulay <jboulay@ekito.fr>"
+  ],
+  "description": "Hamelin project",
+  "main": "server.js",
+  "moduleType": [
+    "node"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.2.16",
+    "bootstrap": "~3.1.1",
+    "jquery-color": "~2.1.2"
+  }
+}
