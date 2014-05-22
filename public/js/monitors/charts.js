@@ -74,8 +74,8 @@
 						
 						chart.options.data[i].dataPoints.splice(0, dataPointsLength - 50);
 					}else if (chart.options.data[i].dataPoints[0] != null
-							//For each datapoint, removes values older than 5s
-							&& chart.options.data[i].dataPoints[0].x < time - 5) {
+							//For each datapoint, removes values older than 2.7s
+							&& chart.options.data[i].dataPoints[0].x < time - 2.7) {
 						chart.options.data[i].dataPoints.shift();
 						onRemove(chart, i);
 					}

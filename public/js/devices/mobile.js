@@ -27,6 +27,7 @@ var yElem = document.getElementById("y");
 var zElem = document.getElementById("z");
 
 var realTime = true;
+var activateDeviceOrientation = false;
 
 var socket = io.connect(document.location.host + '/devices');
 
@@ -42,26 +43,32 @@ socket.on('id', function(data) {
 	}
 });
 
-if (window.DeviceOrientationEvent) {
+//DeviceOrientation is not available on all devices. Using motion data is more convenient
+if (activateDeviceOrientation)
+{
+	if (window.DeviceOrientationEvent) {
+		
+		
+		if (deviceOrientationStatus != null) {
+			deviceOrientationStatus.innerHTML = "DeviceOrientation";
+		}
+		// Listen for the deviceorientation event and handle the raw data
+		window.addEventListener('deviceorientation',
+				deviceOrientationListener, false);
 	
+	} else if (window.OrientationEvent) {
 	
-	if (deviceOrientationStatus != null) {
-		deviceOrientationStatus.innerHTML = "DeviceOrientation";
+		if (deviceOrientationStatus != null) {
+			deviceOrientationStatus.innerHTML = "MozOrientation";
+		}
+		window.addEventListener('MozOrientation', mozOrientationListener,
+				false);
+	
+	} else if (deviceOrientationStatus != null) {
+			deviceOrientationStatus.innerHTML = "Not supported on your device or browser.";
 	}
-	// Listen for the deviceorientation event and handle the raw data
-	window.addEventListener('deviceorientation',
-			deviceOrientationListener, false);
-
-} else if (window.OrientationEvent) {
-
-	if (deviceOrientationStatus != null) {
-	deviceOrientationStatus.innerHTML = "MozOrientation";
-	}
-	window.addEventListener('MozOrientation', mozOrientationListener,
-			false);
-
-} else if (deviceOrientationStatus != null) {
-		deviceOrientationStatus.innerHTML = "Not supported on your device or browser.";
+}else {
+	deviceOrientationStatus.innerHTML = 'Inactive';
 }
 
 if (window.DeviceMotionEvent) {
@@ -74,7 +81,7 @@ function deviceOrientationListener(eventData) {
 
 	//if device doesn't support orientation, this listener is called only once with null event
 	//check http://www.html5rocks.com/en/tutorials/device/orientation/ for more details
-
+	deviceOrientationStatus.innerHTML = 'ok';
 	if (eventData.gamma == null && eventData.beta == null) {
 		//deviceOrientation is not managed, deviceorientation listener is called only one time
 		if (window.DeviceMotionEvent) {
@@ -84,7 +91,7 @@ function deviceOrientationListener(eventData) {
 			window.addEventListener('devicemotion',
 					deviceMotionListenerForOrientation, false);
 		} else if (deviceOrientationStatus != null) {
-			deviceOrientationStatus.innerHTML = "Not supported on your device or browser."
+			deviceOrientationStatus.innerHTML = "Not supported on your device or browser.";
 		}
 
 	} else {
