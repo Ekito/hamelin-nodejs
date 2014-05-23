@@ -1,0 +1,1 @@
+var devicesApp = angular.module('hamelinDevices', ['ui.knob']);

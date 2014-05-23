@@ -1,35 +1,50 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Hamelin</title>
-<meta name="viewport"
-	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<style>
-@media screen {
-	#bg {
-	    position: absolute;
-	    top: 0;
-	    bottom: 0;
-	    left: 0;
-	    right: 0;
-	    width: 100%;
-	    height: 100%;
-	    background-color: #000000;
-	}
-}
-</style>
-</head>
 
-<body>
-	<div id="bg">
-	<!-- <input type="button" value="Change color" onclick='$("#bg").animate({ backgroundColor: "olive" }, "slow");'> -->
-	</div>
+	<head>
+		<title>Hamelin</title>
+		
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<script type="text/javascript" src="/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/jquery-knob/js/jquery.knob.js"></script>
+		<script type="text/javascript" src="/angular/angular.min.js"></script>
+		<script type="text/javascript" src="/angular-knob/src/angular-knob.js"></script>
+		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+		<script type="text/javascript" src="/js/devices/devicesApp.js"></script>
+		<script type="text/javascript" src="/js/devices/controllers/devicesCtrl.js"></script>
+		
+		<link rel='stylesheet' href='/bootstrap/dist/css/bootstrap.min.css'>
+		<link rel='stylesheet' href='./css/style.css'>
+        
+	</head>
 	
-	
-	<script type="text/javascript" src="/jquery/dist/jquery.min.js"></script>
-	<script type="text/javascript" src="/jquery-color/jquery.color.js"></script>
-	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-	<script type="text/javascript" src="/js/devices/mobile.js"></script>
-</body>
+	<body ng-app="hamelinDevices" ng-controller="devicesCtrl">
+		<div class="container" >
+			<div class="jumbotron">
+				<h1>Hamelin</h1>
+				<h4>Une expérience musicale collective temps réel...</h4>
+				<button style="width: 100%" class="btn btn-primary btn-lg" ng-click="startTimer()">
+					<small> Démarrer »</small>
+				</button>
+			</div>
+			<div style="display: table; margin: 0 auto;" class="row">
+				<knob knob-data="data" knob-max='max' knob-options="knobOptions"></knob>
+			</div>
+		</div>
+		<div class="container">
+			<footer>
+				<hr style='margin: 30px 0 10px 0;'>
+				<span>&copy;&nbsp;
+					<a href="http://szajner.net/">B.Szajner</a> -
+					<a href="http://www.les-siestes-electroniques.com/">Les Siestes</a> -
+					<a href="http://www.ekito.fr/">Ekito</a> - 2014
+					
+				</span>
+				<span class="pull-right">{{deviceSocket.id}}</span>
+			</footer>
+		</div>
+	</body>
 </html>
