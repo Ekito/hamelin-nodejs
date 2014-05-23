@@ -1,99 +1,56 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Hamelin device tracker</title>
-<meta name="viewport"
-	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<style>
-#no {
-	display: none;
-}
+	<head>
+		<title>Hamelin</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<script type="text/javascript" src="/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/jquery-knob/js/jquery.knob.js"></script>
+		<script type="text/javascript" src="/angular/angular.min.js"></script>
+		<script type="text/javascript" src="/angular-knob/src/angular-knob.js"></script>
+		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+		
+		<script type="text/javascript" src="/js/devices/devicesApp.js"></script>
+		<script type="text/javascript" src="/js/devices/services/devicesSocket.js"></script>
+		<script type="text/javascript" src="/js/devices/controllers/devicesCtrl.js"></script>
+		
+		<link rel='stylesheet' href='/bootstrap/dist/css/bootstrap.min.css'>
+		<link rel='stylesheet' href='./css/style.css'>
+	</head>
 
-@media screen {
-	html,body,div,span {
-		margin: 0;
-		padding: 0;
-		border: 0;
-		outline: 0;
-		font-size: 100%;
-		vertical-align: baseline;
-	}
-	body {
-		height: auto;
-		-webkit-text-size-adjust: none;
-		font-family: Helvetica, Arial, Verdana, sans-serif;
-		padding: 0px;
-		overflow-x: hidden;
-	}
-	.box {
-		position: relative;
-		float: left;
-		width: 100%;
-		padding: 7px;
-		border: 1px solid rgba(255, 255, 255, 0.6);
-		background: rgba(178, 215, 255, 0.75);
-		min-height: 160px;
-	}
-}
-</style>
-</head>
-
-<body>
-	<div class="box" id="device">
-		<h3>Information de configuration</h1>
-		<table>
-			<tr>
-				<td>Identifiant :</td>
-				<td id="idField"></td>
-			</tr>
-			<tr>
-				<td>Support orientation</td>
-				<td id="doEvent"></td>
-			</tr>
-			<tr>
-				<td>Support accélération</td>
-				<td id="dmEvent"></td>
-			</tr>
-		</table>
-	</div>
-	<div class="box" id="orientation">
-		<h3>Données Orientation</h3>
-		<table>
-			<tr>
-				<td>Gauche / Droite</td>
-				<td id="tiltLR"></td>
-			</tr>
-			<tr>
-				<td>Avant / Arrière</td>
-				<td id="tiltFB"></td>
-			</tr>
-		</table>
-	</div>
-	<div class="box" id="motion">
-		<h3>Données Accélération</h3>
-		<table>
-			<tr>
-				<td>Accélération avec gravité :</td>
-				<td></td>
-			</tr>
-			<tr>
-				<td>X</td>
-				<td id="x"></td>
-			</tr>
-			<tr>
-				<td>Y</td>
-				<td id="y"></td>
-			</tr>
-			<tr>
-				<td>Z</td>
-				<td id="z"></td>
-			</tr>
-		</table>
-	</div>
-	
-	<script type="text/javascript" src="/jquery/dist/jquery.min.js"></script>
-	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-	<script type="text/javascript" src="/js/devices/mobile.js"></script>
-</body>
+	<body ng-app="hamelinDevices" ng-controller="devicesCtrl">
+		<div class="container" >
+			<div class="jumbotron">
+				<div>
+					<h1>Device infos</h1>
+					<h4>Id : {{deviceInfo.id}}</h4>
+					<h4>Status : {{deviceInfo.status}}</h4>
+				</div>
+				<div>
+					<h1>Device orientation</h1>
+					<h4>Enabled : {{deviceOrientation.enabled}}</h4>
+					<div ng-if="deviceOrientation.enabled">
+						<h4>Status : {{deviceOrientation.status}}</h4>
+						<h4>Left/Right : {{deviceOrientation.tiltLR}}</h4>
+						<h4>Front/Back : {{deviceOrientation.tiltFB}}</h4>
+					</div>
+				</div>
+				<div>
+					<h1>Device motion</h1>
+					<h4>Enabled : {{deviceMotion.enabled}}</h4>
+					<div ng-if="deviceMotion.enabled">
+						<h4>Status : {{deviceMotion.status}}</h4>
+						<h4>X : {{deviceMotion.x}}</h4>
+						<h4>Y : {{deviceMotion.y}}</h4>
+						<h4>Z : {{deviceMotion.z}}</h4>
+					</div>
+				</div>
+				<div ng-if="debug.enabled">
+					<h4>Debug : {{debug.message}}</h4>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>
