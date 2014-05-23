@@ -234,7 +234,10 @@ function deviceMotionHandler(x, y, z) {
 if (!realTime){
 	setInterval(function() {
 		
-		deviceOrientationHandler(tiltLR, tiltFB);
+		if (activateDeviceOrientation)
+		{
+			deviceOrientationHandler(tiltLR, tiltFB);
+		}
 		deviceMotionHandler(x, y, z);
 
 		var seconds = new Date().getSeconds();
