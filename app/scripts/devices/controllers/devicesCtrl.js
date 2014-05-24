@@ -1,8 +1,8 @@
 devicesApp.controller('devicesCtrl', function($scope, $window, $interval, devicesSocket) {
 
-	$scope.deviceInfo = {
+	$scope.device = {
 			id : 1,
-			status : "onAir",
+			status : "pending", // pending, ready, onAir
 	};
 	
 	$scope.deviceOrientation = {
@@ -23,18 +23,30 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 	 * Device info management
 	 */
 	devicesSocket.on('connect', function(){
-		devicesSocket.emit('deviceInfo:init');
+		devicesSocket.emit('device:connect');
 	});
 
-	devicesSocket.on('deviceInfo', function(data) {
-		$scope.deviceInfo = data;
+	devicesSocket.on('device:id', function(data) {
+		$scope.device.id = data;
+	});
+	
+	devicesSocket.on('device:joinSession', function(data) {
+		$scope.device.status = "onAir";
+		$scope.currentTime = data.currentTime;
+		$scope.timeLimit = data.timeLimit;
+		
+		$('.timer')
+	    .trigger(
+	        'configure',
+	        {
+	        "max":$scope.timeLimit
+	        });
+		$scope.startTimer();
 	});
 	
 	/**
 	 * Timer (Knob) settings
 	 */
-	$scope.data = 1;
-	$scope.max = 60;
     $scope.knobOptions = {
       'width':150,
       'skin': 'tron',
@@ -46,12 +58,12 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
     $scope.startTimer = function() {
 	    var timer = setInterval(function() {
 	    	$scope.$apply(function(){
-		    	$scope.data++;
+		    	$scope.currentTime++;
 		    	
-		    	if ($scope.data == 60)
+		    	if ($scope.currentTime == $scope.timeLimit)
 				{
 			    	clearInterval(timer);
-			    	$scope.deviceInfo.status = "pending";
+			    	$scope.device.status = "pending";
 				}
 	    	});
 	    	
@@ -148,9 +160,9 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
     
     //Send data in real-time. Comment this if sending orientation data must be async.
     $scope.$watch('deviceOrientation.time', function(newValue, oldValue){
-		if ($scope.deviceInfo.id != -1) {
+		if ($scope.device.id != -1) {
 			devicesSocket.emit('deviceOrientation', {
-				id : $scope.deviceInfo.id,
+				id : $scope.device.id,
 				time : $scope.deviceOrientation.time,
 				tiltLR : $scope.deviceOrientation.tiltLR,
 				tiltFB : $scope.deviceOrientation.tiltFB
@@ -213,10 +225,10 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 		
     	detectPercussion();
     	
-    	if ($scope.deviceInfo.id != -1) {
+    	if ($scope.device.id != -1) {
 			
 			devicesSocket.emit('deviceMotion', {
-				id : $scope.deviceInfo.id,
+				id : $scope.device.id,
 				time : $scope.deviceMotion.time,
 				x : $scope.deviceMotion.x,
 				y : $scope.deviceMotion.y,
