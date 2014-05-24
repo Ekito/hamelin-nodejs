@@ -17,11 +17,11 @@ var app = express();
 
 
 app.set('port', serverPort);
-app.set('views', __dirname + '/views');
+app.set('views', __dirname + '/app/views');
 app.set('view engine', 'jade');
-app.use(require('stylus').middleware(__dirname + '/public'));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'bower_components')));
+app.use(require('stylus').middleware(__dirname + '/app'));
+app.use(express.static(path.join(__dirname, 'app')));
+app.use(express.static(path.join(__dirname, 'app/bower_components')));
 
 /**
  * Routes initialization
