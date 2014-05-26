@@ -29,18 +29,16 @@
 			<div class="jumbotron">
 				<h1>Hamelin</h1>
 				<h4>Une expérience musicale collective temps réel...</h4>
-				<button ng-if="false" style="width: 100%" class="btn btn-success btn-lg">
-					REJOINDRE LA MANIF »
-				</button>
-				<button ng-if="device.status == 'pending'" style="width: 100%" class="btn btn-default btn-lg" disabled>
-					EN ATTENTE ...
-				</button>
-				<button ng-if="device.status == 'onAir'" style="width: 100%" class="btn btn-danger btn-lg" disabled>
-					ON AIR
-				</button>
-			</div>
-			<div style="display: table; margin: 0 auto;" class="row">
-				<knob knob-data="currentTime" knob-max='timeLimit' knob-options="knobOptions" class="timer"></knob>
+				
+				<div class="text-danger">
+					Pour accéder au live, veuillez vous connecter au réseau Wifi Hamelin et redémarrer l'application.
+				</div>
+				<hr style='margin: 30px 0 10px 0;border-top: 1px solid #BDBDBD'>
+				<div class="small">Vous êtes actuellement connecté à la plateforme de démo.</div>
+				<div class="small"><a href="http://www.les-siestes-electroniques.com/Projet-Hamelin?lang=fr">En savoir plus</a>
+				sur le projet Hamelin
+				</div>
+					
 			</div>
 		</div>
 		<div class="container">
