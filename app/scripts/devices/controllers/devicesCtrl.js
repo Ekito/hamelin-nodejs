@@ -19,6 +19,8 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 			enabled : true
 	};
 	
+	var lastOscTime = new Date().getTime();
+	
 	/**
 	 * Device info management
 	 */
@@ -212,11 +214,14 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 		
 		var xratio = xrange/timerange;
 		
-		if ($scope.deviceMotion.x > 15) {
-			if (xratio > xratioThreshold)
-			{
+		var oscTime = new Date().getTime();
+		
+		if ($scope.deviceMotion.x > 15
+				&& oscTime - lastOscTime > 500
+				&& xratio > xratioThreshold)
+		{				
 				devicesSocket.osc("/meneur", 1);
-			}
+				lastOscTime = oscTime;
 		}
 	};
     
