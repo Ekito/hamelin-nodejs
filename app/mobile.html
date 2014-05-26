@@ -27,8 +27,14 @@
 			<div class="jumbotron">
 				<h1>Hamelin</h1>
 				<h4>Une expérience musicale collective temps réel...</h4>
-				<button style="width: 100%" class="btn btn-primary btn-lg" ng-click="startTimer()">
-					<small> Démarrer »</small>
+				<button ng-if="false" style="width: 100%" class="btn btn-success btn-lg">
+					REJOINDRE LA MANIF »
+				</button>
+				<button ng-if="device.status == 'pending'" style="width: 100%" class="btn btn-default btn-lg" disabled>
+					EN ATTENTE ...
+				</button>
+				<button ng-if="device.status == 'onAir'" style="width: 100%" class="btn btn-danger btn-lg" disabled>
+					ON AIR
 				</button>
 			</div>
 			<div style="display: table; margin: 0 auto;" class="row">
