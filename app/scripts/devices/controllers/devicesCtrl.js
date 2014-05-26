@@ -34,7 +34,7 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 		$scope.device.status = "onAir";
 		$scope.currentTime = data.currentTime;
 		$scope.timeLimit = data.timeLimit;
-		
+		$scope.device.meneur = data.meneur;
 		$('.timer')
 	    .trigger(
 	        'configure',
@@ -223,9 +223,11 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
     //Send data in real-time. Comment this if sending orientation data must be async.
     $scope.$watch('deviceMotion.time', function(newValue, oldValue){
 		
-    	detectPercussion();
+    	if ($scope.device.meneur){
+    		detectPercussion();
+    	}
     	
-    	if ($scope.device.id != -1) {
+    	if ($scope.device.id != -1 && !$scope.device.meneur) {
 			
 			devicesSocket.emit('deviceMotion', {
 				id : $scope.device.id,
