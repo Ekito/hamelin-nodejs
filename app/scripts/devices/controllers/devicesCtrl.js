@@ -206,7 +206,7 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 
     //Detect percussion movement
     var detectPercussion = function(){
-    	var xratioThreshold = Math.pow(10, -11);
+    	var xratioThreshold = 0.2;
 	    var xrange = $scope.deviceMotion.x - $scope.prevDeviceMotion.x;
 		var timerange = $scope.deviceMotion.time - $scope.prevDeviceMotion.time;
 		
