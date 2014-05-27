@@ -220,11 +220,21 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 				&& oscTime - lastOscTime > 500
 				&& xratio > xratioThreshold)
 		{				
-				devicesSocket.osc("/meneur", 1);
+				devicesSocket.osc("/meneur", [1]);
 				lastOscTime = oscTime;
 		}
 	};
     
+	var sendXRate = function(motion)
+	{
+		var xrange = $scope.deviceMotion.x - $scope.prevDeviceMotion.x;
+//		var timerange = $scope.deviceMotion.time - $scope.prevDeviceMotion.time;
+		
+//		var xratio = xrange/timerange;
+	
+		devicesSocket.emit('deviceMotionRate', Math.abs(xrange));
+	};
+	
     //Send data in real-time. Comment this if sending orientation data must be async.
     $scope.$watch('deviceMotion.time', function(newValue, oldValue){
 		
@@ -234,13 +244,15 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
     	
     	if ($scope.device.id != -1 && !$scope.device.meneur) {
 			
-			devicesSocket.emit('deviceMotion', {
-				id : $scope.device.id,
-				time : $scope.deviceMotion.time,
-				x : $scope.deviceMotion.x,
-				y : $scope.deviceMotion.y,
-				z : $scope.deviceMotion.z
-			});
+    		sendXRate($scope.deviceMotion);
+			
+//    		devicesSocket.emit('deviceMotion', {
+//				id : $scope.device.id,
+//				time : $scope.deviceMotion.time,
+//				x : $scope.deviceMotion.x,
+//				y : $scope.deviceMotion.y,
+//				z : $scope.deviceMotion.z
+//			});
 		}
     });
 
