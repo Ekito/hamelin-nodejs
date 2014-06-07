@@ -2,7 +2,6 @@
  * Init all modules and servers
  */
 var express = require('express'),
-	routes = require('./lib/config/routes'),
 	path = require('path'),
 	logger = require('./lib/config/log');
 
@@ -17,17 +16,8 @@ var app = express();
 
 
 app.set('port', serverPort);
-app.set('views', __dirname + '/app/views');
-app.set('view engine', 'jade');
-app.use(require('stylus').middleware(__dirname + '/app'));
 app.use(express.static(path.join(__dirname, 'app')));
 app.use(express.static(path.join(__dirname, 'app/bower_components')));
-
-/**
- * Routes initialization
- */
-logger.info('Routes initialization...');
-app.use('/', routes);
 
 //Bootstrap socket
 require('./lib/socket/socket')(app);

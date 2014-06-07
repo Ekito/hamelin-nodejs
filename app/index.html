@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en" ng-app="hamelinMonitors">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		
+		<link rel="shortcut icon" href="images/hamelin.ico">
+		<title>Hamelin</title>
+
+			<link href="bootstrap/dist/css/bootstrap.min.css"
+				rel="stylesheet">
+			<link href="/styles/main.css"
+				rel="stylesheet">
+			<style>
+				body { padding-top: 60px; }
+			</style>
+			
+			<script type="text/javascript" src="/jquery/jquery.min.js"></script>
+			<script type="text/javascript" src="/angular/angular.min.js"></script>
+			<script type="text/javascript" src="/angular-route/angular-route.min.js"></script>
+			<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+			<script type="text/javascript" src="/bootstrap/dist/js/bootstrap.min.js"></script>
+			
+			<script type="text/javascript" src="/scripts/monitors/monitorsApp.js"></script>
+			<script type="text/javascript" src="/scripts/monitors/services/monitorsSocket.js"></script>
+			<script type="text/javascript" src="/scripts/monitors/controllers/oscConfigurationCtrl.js"></script>
+			
+	</head>		
+	<body>
+		<div ng-include="'views/navbar.html'"></div>
+		<div ng-view></div>
+		<div ng-include="'views/footer.html'"></div>
+	</body>
+
+</html>
