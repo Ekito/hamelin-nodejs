@@ -6,11 +6,13 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 	};
 	
 	$scope.deviceOrientation = {
-			enabled : false
+			enabled : false,
+			sendRawData : true,
 	};
 
 	$scope.deviceMotion = {
-			enabled : true
+			enabled : true,
+			sendRawData : true,
 	};
 
 	$scope.prevDeviceMotion = {};
@@ -242,17 +244,20 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
     		detectPercussion();
     	}
     	
-    	if ($scope.device.id != -1 && !$scope.device.meneur) {
+    	if ($scope.device.id != -1) {
 			
     		sendXRate($scope.deviceMotion);
 			
-//    		devicesSocket.emit('deviceMotion', {
-//				id : $scope.device.id,
-//				time : $scope.deviceMotion.time,
-//				x : $scope.deviceMotion.x,
-//				y : $scope.deviceMotion.y,
-//				z : $scope.deviceMotion.z
-//			});
+    		if ($scope.deviceMotion.sendRawData)
+    		{
+	    		devicesSocket.emit('deviceMotion', {
+					id : $scope.device.id,
+					time : $scope.deviceMotion.time,
+					x : $scope.deviceMotion.x,
+					y : $scope.deviceMotion.y,
+					z : $scope.deviceMotion.z
+				});
+    		}
 		}
     });
 
