@@ -1,25 +1,24 @@
 		<div class="container">
 			<div class="row">
-				<div class="col-md-5"></div>
-				<div class="col-md-1">
-					<span ng-if="!chartsControls.isResume" id="play">
-						<img src="images/media-playback-start.png" height="60" width="60" alt="Play" style="cursor:pointer;" ng-click="resume();">
-					</span>
-					<span ng-if="chartsControls.isResume" id="pause">
-						<img src="images/media-playback-pause.png" height="60" width="60" alt="Pause" style="cursor:pointer;" ng-click="pause();">
-					</span>
+				<div class="col-md-12">
+					<div style="width: 100%;" ng-if="!chartsControls.isResume" id="play">
+						<img style="display: block;margin: 0 auto;" src="images/media-playback-start.png" height="60" width="60" alt="Play" style="cursor:pointer;" ng-click="resume();">
+					</div>
+					<div style="width: 100%;" ng-if="chartsControls.isResume" id="pause">
+						<img style="display: block;margin: 0 auto;" src="images/media-playback-pause.png" height="60" width="60" alt="Pause" style="cursor:pointer;" ng-click="pause();">
+					</div>
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-md-5">
+				<div class="col-md-6">
 					<div id="xChart" class="chart"></div>
 				</div>
-				<div class="col-md-5">
+				<div class="col-md-6">
 					<div id="yChart" class="chart"></div>
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-md-5">
+				<div class="col-md-6">
 					<div id="zChart" class="chart"></div>
 				</div>
 			</div>
