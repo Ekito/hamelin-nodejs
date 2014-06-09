@@ -1,13 +1,14 @@
 div.chart{
-	width: 500px;
-	height: 280px;
+	width: 450px;
+	height: 260px;
 }
 div.chart>div{
-	width: 500px;
-	height: 280px;
+	width: 450px;
+	height: 260px;
 }
 
 div.chart>div>canvas{
-	width: 500px;
-	height: 280px;
+	position: absolute !important;
+	width: 450px;
+	height: 260px;
 }

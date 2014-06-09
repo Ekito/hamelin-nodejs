@@ -1,30 +1,26 @@
-<div class="container">
-	<div class="row">
-		<div class="col-md-5"></div>
-		<div class="col-md-1">
-			<span id="play">
-				<img src="images/media-playback-start.png" height="60" width="60" alt="Play" style="cursor:pointer;" onclick="resume();">
-			</span>
-			<span id="pause">
-				<img src="images/media-playback-pause.png" height="60" width="60" alt="Pause" style="cursor:pointer;" onclick="pause();">
-			</span>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-5"></div>
+				<div class="col-md-1">
+					<span ng-if="!chartsControls.isResume" id="play">
+						<img src="images/media-playback-start.png" height="60" width="60" alt="Play" style="cursor:pointer;" ng-click="resume();">
+					</span>
+					<span ng-if="chartsControls.isResume" id="pause">
+						<img src="images/media-playback-pause.png" height="60" width="60" alt="Pause" style="cursor:pointer;" ng-click="pause();">
+					</span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-5">
+					<div id="xChart" class="chart"></div>
+				</div>
+				<div class="col-md-5">
+					<div id="yChart" class="chart"></div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-5">
+					<div id="zChart" class="chart"></div>
+				</div>
+			</div>
 		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-5">
-			<div id="xChart.chart"></div>
-		</div>
-		<div class="col-md-5">
-			<div id="yChart.chart"></div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-5">
-			<div id="zChart.chart"></div>
-		</div>
-	</div>
-</div>
-
-<script type="text/javascript" src="scripts/libs/canvasjs.min.js"></script>
-<script type="text/javascript" src="scripts/monitors/charts.js"></script>
-<script type="text/javascript" src="scripts/monitors/deviceMotionCharts.js"></script>

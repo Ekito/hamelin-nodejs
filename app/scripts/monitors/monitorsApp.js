@@ -11,8 +11,8 @@ monitorsApp.config(
 		          controller: 'oscConfigurationCtrl'
 		        }).
 		      when('/deviceMotionCharts', {
-		          templateUrl: 'views/deviceMotionCharts.html'
-//			          controller: 'deviceMotionChartsController'
+		          templateUrl: 'views/deviceMotionCharts.html',
+			      controller: 'deviceMotionChartsCtrl'
 		        }).
 		      when('/deviceOrientationCharts', {
 		          templateUrl: 'views/deviceOrientationCharts.html'
