@@ -1,0 +1,30 @@
+<div class="container">
+	<div class="row">
+		<div class="col-sm-12">
+			<h3>List of devices</h3>
+			<hr>
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Active</th>
+						<th>OnAir</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="devices in connectedDevices">
+						<td>{{devices.index}}</td>
+						<td>{{devices.active}}</td>
+						<td>{{devices.onAir}}</td>
+						<td class="actionColumn">
+							<a><span class="glyphicon glyphicon-arrow-up clickable"
+									data-toggle="tooltip" data-placement="bottom" title="Sélectionner le meneur" 
+									ng-click=""></span></a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
