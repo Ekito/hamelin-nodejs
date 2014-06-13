@@ -34,18 +34,20 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 		$scope.device.id = data;
 	});
 	
-	devicesSocket.on('device:joinSession', function(data) {
+	devicesSocket.on('device:info', function(data) {
 		$scope.device.status = "onAir";
 		$scope.currentTime = data.currentTime;
 		$scope.timeLimit = data.timeLimit;
-		$scope.device.meneur = data.meneur;
+		$scope.device.leader = data.leader;
 		$('.timer')
 	    .trigger(
 	        'configure',
 	        {
 	        "max":$scope.timeLimit
 	        });
-		$scope.startTimer();
+		if (data.joinSession){
+			$scope.startTimer();
+		}
 	});
 	
 	/**
@@ -240,7 +242,7 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
     //Send data in real-time. Comment this if sending orientation data must be async.
     $scope.$watch('deviceMotion.time', function(newValue, oldValue){
 		
-    	if ($scope.device.meneur){
+    	if ($scope.device.leader){
     		detectPercussion();
     	}
     	
