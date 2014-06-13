@@ -12,3 +12,14 @@ div.chart>div>canvas{
 	width: 450px;
 	height: 260px;
 }
+
+.clickable {
+	cursor: pointer;
+}
+
+.actionColumn {
+	width:22px;
+	white-space:nowrap;
+	padding-right: 4px !important;
+	padding-left: 4px !important;
+}

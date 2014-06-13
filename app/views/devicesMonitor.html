@@ -7,20 +7,25 @@
 				<thead>
 					<tr>
 						<th>#</th>
+						<th>SocketId</th>
 						<th>Active</th>
 						<th>OnAir</th>
-						<th></th>
+						<th class="actionColumn"></th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr ng-repeat="devices in connectedDevices">
-						<td>{{devices.index}}</td>
-						<td>{{devices.active}}</td>
-						<td>{{devices.onAir}}</td>
+					<tr ng-repeat="device in connectedDevices">
+						<td>{{device.index}}</td>
+						<td>{{device.id}}</td>
+						<td>{{device.active}}</td>
+						<td>{{device.onAir}}</td>
 						<td class="actionColumn">
-							<a><span class="glyphicon glyphicon-arrow-up clickable"
-									data-toggle="tooltip" data-placement="bottom" title="Sélectionner le meneur" 
-									ng-click=""></span></a>
+							<a ng-if="!leaderDevice.index"><span class="glyphicon glyphicon-user clickable"
+									data-toggle="tooltip" data-placement="bottom" title="Sélectionner le leader" 
+									ng-click="selectLeader(device)"></span></a>
+							<a ng-if="device.index == leaderDevice.index"><span class="glyphicon glyphicon-user" style="color: #FF0000"
+									data-toggle="tooltip" data-placement="bottom" title="Désélectionner le leader"
+									ng-click="unSelectLeader()"></span></a>
 						</td>
 					</tr>
 				</tbody>
