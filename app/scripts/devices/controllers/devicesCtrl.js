@@ -20,6 +20,8 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 	$scope.debug = {
 			enabled : true
 	};
+
+	$scope.platform = navigator.platform;
 	
 	var lastOscTime = new Date().getTime();
 	
@@ -54,7 +56,7 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 	 * Timer (Knob) settings
 	 */
     $scope.knobOptions = {
-      'width':150,
+      'width':100,
       'skin': 'tron',
       'thickness': .2,
       'displayInput': false,
@@ -164,18 +166,6 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
     	}
     };
     
-    //Send data in real-time. Comment this if sending orientation data must be async.
-    $scope.$watch('deviceOrientation.time', function(newValue, oldValue){
-		if ($scope.device.id != -1) {
-			devicesSocket.emit('deviceOrientation', {
-				id : $scope.device.id,
-				time : $scope.deviceOrientation.time,
-				tiltLR : $scope.deviceOrientation.tiltLR,
-				tiltFB : $scope.deviceOrientation.tiltFB
-			});
-		}
-    });
-    
     if ($scope.deviceOrientation.enabled)
 	{
     	$scope.enableDeviceOrientation();
@@ -232,9 +222,13 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 	var sendXRate = function(motion)
 	{
 		var xrange = $scope.deviceMotion.x - $scope.prevDeviceMotion.x;
-//		var timerange = $scope.deviceMotion.time - $scope.prevDeviceMotion.time;
-		
-//		var xratio = xrange/timerange;
+
+		//iPhone deviceMotion data must be factored because motionRange can be multiplied by 3
+		//compared to other devices
+		if (navigator.platform == "iPhone" || navigator.platform == "iPad")
+		{
+			xrange = xrange / 3;
+		}
 	
 		devicesSocket.emit('deviceMotionRate', Math.abs(xrange));
 	};
@@ -245,22 +239,6 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
     	if ($scope.device.leader){
     		detectPercussion();
     	}
-    	
-    	if ($scope.device.id != -1) {
-			
-    		sendXRate($scope.deviceMotion);
-			
-    		if ($scope.deviceMotion.sendRawData)
-    		{
-	    		devicesSocket.emit('deviceMotion', {
-					id : $scope.device.id,
-					time : $scope.deviceMotion.time,
-					x : $scope.deviceMotion.x,
-					y : $scope.deviceMotion.y,
-					z : $scope.deviceMotion.z
-				});
-    		}
-		}
     });
 
     if ($scope.deviceMotion.enabled)
@@ -268,4 +246,33 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
     	$scope.enableDeviceMotion();
 	}
     
+
+	//Device motion data are sampled every 100ms,
+    //because some devices send more data than others
+    setInterval(function() {
+
+    	if ($scope.device.id != -1) {
+	
+			sendXRate($scope.deviceMotion);
+
+	    	if ($scope.deviceMotion.sendRawData){
+	    		devicesSocket.emit('deviceMotion', {
+						id : $scope.device.id,
+						time : $scope.deviceMotion.time,
+						x : $scope.deviceMotion.x,
+						y : $scope.deviceMotion.y,
+						z : $scope.deviceMotion.z
+					});
+	    	}
+
+	    	if ($scope.deviceorientation.sendRawData){
+	    		devicesSocket.emit('deviceOrientation', {
+					id : $scope.device.id,
+					time : $scope.deviceOrientation.time,
+					tiltLR : $scope.deviceOrientation.tiltLR,
+					tiltFB : $scope.deviceOrientation.tiltFB
+				});
+	    	}
+    	}
+    },100);
 });
