@@ -28,9 +28,7 @@
 		<div class="container" >
 			<div class="jumbotron">
 				<h4>Une expérience musicale collective temps réel...</h4>
-				<button ng-if="false" style="width: 100%" class="btn btn-success btn-lg">
-					REJOINDRE LA MANIF »
-				</button>
+				{{device.status}}
 				<button ng-if="device.status == 'pending'" style="width: 100%" class="btn btn-default btn-lg" disabled>
 					EN ATTENTE ...
 				</button>

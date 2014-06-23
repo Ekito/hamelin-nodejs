@@ -2,7 +2,7 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 
 	$scope.device = {
 			id : 1,
-			status : "pending", // pending, ready, onAir
+			status : "pending", // pending, onAir
 	};
 
 	$scope.deviceOrientation = {
@@ -20,6 +20,8 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 	$scope.debug = {
 			enabled : true
 	};
+	
+	$scope.timer = {};
 
 	$scope.platform = navigator.platform;
 
@@ -32,26 +34,42 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 		devicesSocket.emit('device:connect');
 	});
 
+	devicesSocket.on('reconnect', function(){
+		devicesSocket.emit('device:reconnect');
+	});
+	
 	devicesSocket.on('device:id', function(data) {
 		$scope.device.id = data;
 	});
 
-	devicesSocket.on('device:info', function(data) {
-		$scope.device.status = "onAir";
+	devicesSocket.on('device:leader', function(data) {
+		$scope.device.leader = data;
+	});
+
+	devicesSocket.on('session:join', function(data) {
+		$scope.device.status = 'onAir';
 		$scope.currentTime = data.currentTime;
 		$scope.timeLimit = data.timeLimit;
 		$scope.device.leader = data.leader;
+		
 		$('.timer')
 		.trigger(
 				'configure',
 				{
 					"max":$scope.timeLimit
 				});
-		if (data.joinSession){
-			$scope.startTimer();
-		}
+		
+		startTimer();
 	});
 
+	devicesSocket.on('session:leave', function() {
+		stopTimer();
+		$scope.device.status = 'pending';
+		$scope.currentTime = 0;
+		$scope.device.leader = false;
+		
+	});
+	
 	/**
 	 * Timer (Knob) settings
 	 */
@@ -63,19 +81,20 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 			'readOnly': true
 	};
 
-	$scope.startTimer = function() {
-		var timer = setInterval(function() {
-			$scope.$apply(function(){
+	var startTimer = function() {
+		$scope.timer = $interval(function() {
 				$scope.currentTime++;
 
 				if ($scope.currentTime == $scope.timeLimit)
 				{
-					clearInterval(timer);
+					$interval.cancel($scope.timer);
 					$scope.device.status = "pending";
 				}
-			});
-
-		}, 1000);
+		}, 1000, 0, true);
+	};
+	
+	var stopTimer = function() {
+		$interval.cancel($scope.timer);
 	};
 
 	/*****************************************************************

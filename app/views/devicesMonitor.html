@@ -1,11 +1,33 @@
 <div class="container">
 	<div class="row">
 		<div class="col-sm-12">
-			<h3>Participants number : {{participantsNb}} / {{maxParticipants}}</h3>
-			<div>
-				<slider ng-model="maxParticipants" floor="0" ceiling="100" step="1" precision="0" ng-change="sendMaxParticipants(maxParticipants)">
-				</slider>
+			<h3>Session 
+				<button ng-if="session.status == 'ended'" class="btn btn-success btn-lg pull-right" ng-click="startSession()">
+					Start session
+				</button>
+				<button ng-if="session.status == 'started'" class="btn btn-alert btn-lg pull-right" ng-click="stopSession()">
+					Stop session
+				</button>
+			</h3>
+			<div class="row">
+				<div class="col-xs-6">
+					<h4>Participants number : {{participantsNb}} / {{maxParticipants}}</h4>
+				</div>
+				<div class="col-xs-6">
+					<h4>Timer</h4>
+				</div>
 			</div>
+			<div class="row">
+				<div class="col-xs-6">
+					<slider ng-model="maxParticipants" floor="0" ceiling="100" step="1" precision="0" ng-change="sendMaxParticipants(maxParticipants)">
+					</slider>
+				</div>
+				<div class="col-xs-6">
+					<knob knob-data="session.currentTime" knob-max='session.timeLimit' knob-options="knobOptions" class="timer"></knob>
+				</div>
+			</div>
+			<hr>
+			
 			<h3>List of devices</h3>
 			<hr>
 			<table class="table table-striped table-hover">

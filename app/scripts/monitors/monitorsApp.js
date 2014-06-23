@@ -1,4 +1,4 @@
-var monitorsApp = angular.module('hamelinMonitors', ['ngRoute', 'vr.directives.slider']);
+var monitorsApp = angular.module('hamelinMonitors', ['ngRoute', 'ui.knob', 'vr.directives.slider']);
 
 monitorsApp.config(
 		function($routeProvider) {
