@@ -8,7 +8,7 @@ monitorsApp.controller('devicesMonitorCtrl', function($scope, $interval, monitor
 			status : "ended",
 			currentTime : 0,
 	}
-	$scope.timerInterval = {};
+	$scope.timer = {};
 	
 	/**
 	 * Timer (Knob) settings
@@ -43,6 +43,10 @@ monitorsApp.controller('devicesMonitorCtrl', function($scope, $interval, monitor
 				{
 					"max":data.timeLimit
 				});
+		if ($scope.session.status == "started" && !$scope.timer.started)
+		{
+			startTimer();
+		}
 	});
 
 	monitorsSocket.on('session:started', function(data){
@@ -77,19 +81,21 @@ monitorsApp.controller('devicesMonitorCtrl', function($scope, $interval, monitor
 	};
 	
 	var startTimer = function() {
-		$scope.timerInterval = $interval(function(){
+		$scope.timer.started = true;
+		$scope.timer.interval = $interval(function(){
 				$scope.session.currentTime++;
 
 				if ($scope.session.currentTime == $scope.session.timeLimit)
 				{
-					clearInterval(timer);
-					$scope.session.status = "ended";
+					stopTimer();
 				}
 		}, 1000, 0, true);
 	};
 	
 	var stopTimer = function() {
-		$interval.cancel($scope.timerInterval);
+		$interval.cancel($scope.timer.interval);
+		$scope.timer.started = false;
+		$scope.session.status = "ended";
 		$scope.session.currentTime = 0;
 	}
 

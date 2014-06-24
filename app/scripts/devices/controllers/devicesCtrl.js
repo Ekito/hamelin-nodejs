@@ -66,8 +66,6 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 		stopTimer();
 		$scope.device.status = 'pending';
 		$scope.currentTime = 0;
-		$scope.device.leader = false;
-		
 	});
 	
 	/**
@@ -87,14 +85,15 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 
 				if ($scope.currentTime == $scope.timeLimit)
 				{
-					$interval.cancel($scope.timer);
-					$scope.device.status = "pending";
+					stopTimer();
 				}
 		}, 1000, 0, true);
 	};
 	
 	var stopTimer = function() {
 		$interval.cancel($scope.timer);
+		$scope.device.status = 'pending';
+		$scope.currentTime = 0;
 	};
 
 	/*****************************************************************
