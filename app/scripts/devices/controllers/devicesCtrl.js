@@ -16,7 +16,8 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 	};
 
 	$scope.prevDeviceMotion = {};
-
+	$scope.sampleDeviceMotion = {};
+	
 	$scope.debug = {
 			enabled : true
 	};
@@ -198,7 +199,10 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 			//Acceleration and rotation will not be supported on all browsers
 			// Grab the acceleration including gravity from the results
 			var acceleration = eventData.accelerationIncludingGravity;
-
+			
+			//Acceleration is null on some Android devices
+//			var acceleration = eventData.acceleration;
+			
 			//Keep previous values
 			$scope.prevDeviceMotion = angular.copy($scope.deviceMotion);
 
@@ -232,20 +236,22 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 				&& oscTime - lastOscTime > 500
 				&& xratio > xratioThreshold)
 		{				
-			devicesSocket.osc("/meneur", [1]);
+			devicesSocket.osc("/menant", [1]);
 			lastOscTime = oscTime;
 		}
 	};
 
 	var sendXRate = function(motion)
 	{
-		var xrange = $scope.deviceMotion.x - $scope.prevDeviceMotion.x;
-
+		var xrange = $scope.deviceMotion.x - $scope.sampleDeviceMotion.x;
+		
+		$scope.sampleDeviceMotion = angular.copy($scope.deviceMotion);
+		
 		//iPhone deviceMotion data must be factored because motionRange can be multiplied by 3
 		//compared to other devices
 		if (navigator.platform == "iPhone" || navigator.platform == "iPad")
 		{
-			xrange = xrange / 3;
+			xrange = xrange / 2.5;
 		}
 
 		devicesSocket.emit('deviceMotionRate', Math.abs(xrange));
