@@ -7,12 +7,12 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 
 	$scope.deviceOrientation = {
 			enabled : false,
-			sendRawData : true,
+			sendRawData : false,
 	};
 
 	$scope.deviceMotion = {
 			enabled : true,
-			sendRawData : true,
+			sendRawData : false,
 	};
 
 	$scope.prevDeviceMotion = {};
@@ -289,7 +289,7 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 				});
 			}
 
-			if ($scope.deviceorientation.sendRawData){
+			if ($scope.deviceOrientation.sendRawData){
 				devicesSocket.emit('deviceOrientation', {
 					id : $scope.device.id,
 					time : $scope.deviceOrientation.time,
