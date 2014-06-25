@@ -1,3 +1,12 @@
+.hamelin-jumbo {
+	margin-bottom : 0px !important;
+}
+
+.app-download {
+	width : 90%;
+	margin-bottom : 5px;
+}
+
 div.chart{
 	width: 450px;
 	height: 260px;
