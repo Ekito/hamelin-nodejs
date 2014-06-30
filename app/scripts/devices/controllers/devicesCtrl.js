@@ -224,19 +224,24 @@ devicesApp.controller('devicesCtrl', function($scope, $window, $interval, device
 
 	//Detect percussion movement
 	var detectPercussion = function(){
-		var xratioThreshold = 0.2;
+		var xratioThreshold = 0.15;
 		var xrange = $scope.deviceMotion.x - $scope.prevDeviceMotion.x;
 		var timerange = $scope.deviceMotion.time - $scope.prevDeviceMotion.time;
 
+		if (navigator.platform == "iPhone" || navigator.platform == "iPad")
+		{
+			xrange = xrange / 2.5;
+		}
+		
 		var xratio = xrange/timerange;
 
 		var oscTime = new Date().getTime();
 
-		if ($scope.deviceMotion.x > 15
-				&& oscTime - lastOscTime > 500
+		if ($scope.deviceMotion.x > 14
+				&& oscTime - lastOscTime > 100
 				&& xratio > xratioThreshold)
 		{				
-			devicesSocket.osc("/menant", [1]);
+			devicesSocket.osc("/menant", [xratio]);
 			lastOscTime = oscTime;
 		}
 	};
